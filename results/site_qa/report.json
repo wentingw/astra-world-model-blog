@@ -1,0 +1,394 @@
+{
+  "scope": "local Chromium desktop/mobile, both languages, selectors, image and video metadata",
+  "pages": [
+    {
+      "title": "\u5f53\u5730\u56fe\u6210\u4e3a\u7a0b\u5e8f \u2014 Astra World Models",
+      "bodyWidth": 1425,
+      "viewport": 1440,
+      "placeholders": false,
+      "images": [
+        {
+          "src": "assets/hero.jpg",
+          "complete": true,
+          "width": 1600,
+          "loading": "auto"
+        },
+        {
+          "src": "figures/methods_plan.svg",
+          "complete": true,
+          "width": 1440,
+          "loading": "lazy"
+        },
+        {
+          "src": "assets/views/M2_036.png",
+          "complete": true,
+          "width": 640,
+          "loading": "auto"
+        },
+        {
+          "src": "assets/views/GT_036.jpg",
+          "complete": true,
+          "width": 640,
+          "loading": "auto"
+        },
+        {
+          "src": "figures/five_view_comparison.jpg",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/m4_pose_oracle_supplement.jpg",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/direct_baseline_comparison.jpg",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/model_depth_error_pixel_heatmap.png",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/current_trajectories.png",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/drone_three_queries.jpg",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        }
+      ],
+      "videos": [
+        {
+          "src": "http://127.0.0.1:44193/assets/drone_episode.mp4",
+          "readyState": 4
+        },
+        {
+          "src": "http://127.0.0.1:44193/assets/g1_episode.mp4",
+          "readyState": 4
+        }
+      ],
+      "language": "index",
+      "mobile": false,
+      "comparison": {
+        "source": "http://127.0.0.1:44193/assets/views/M4_108.png",
+        "loaded": 640
+      },
+      "model_loaded": true,
+      "model_switch_loaded": true,
+      "video_playback": [
+        {
+          "time": 0.350322,
+          "frames": 7,
+          "readyState": 4
+        },
+        {
+          "time": 0.350623,
+          "frames": 9,
+          "readyState": 4
+        }
+      ]
+    },
+    {
+      "title": "\u5f53\u5730\u56fe\u6210\u4e3a\u7a0b\u5e8f \u2014 Astra World Models",
+      "bodyWidth": 390,
+      "viewport": 390,
+      "placeholders": false,
+      "images": [
+        {
+          "src": "assets/hero.jpg",
+          "complete": true,
+          "width": 1600,
+          "loading": "auto"
+        },
+        {
+          "src": "figures/methods_plan.svg",
+          "complete": true,
+          "width": 1440,
+          "loading": "lazy"
+        },
+        {
+          "src": "assets/views/M2_036.png",
+          "complete": true,
+          "width": 640,
+          "loading": "auto"
+        },
+        {
+          "src": "assets/views/GT_036.jpg",
+          "complete": true,
+          "width": 640,
+          "loading": "auto"
+        },
+        {
+          "src": "figures/five_view_comparison.jpg",
+          "complete": true,
+          "width": 1370,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/m4_pose_oracle_supplement.jpg",
+          "complete": true,
+          "width": 1600,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/direct_baseline_comparison.jpg",
+          "complete": true,
+          "width": 1280,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/model_depth_error_pixel_heatmap.png",
+          "complete": true,
+          "width": 2560,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/current_trajectories.png",
+          "complete": true,
+          "width": 2432,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/drone_three_queries.jpg",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        }
+      ],
+      "videos": [
+        {
+          "src": "http://127.0.0.1:44193/assets/drone_episode.mp4",
+          "readyState": 4
+        },
+        {
+          "src": "http://127.0.0.1:44193/assets/g1_episode.mp4",
+          "readyState": 4
+        }
+      ],
+      "language": "index",
+      "mobile": true,
+      "comparison": {
+        "source": "http://127.0.0.1:44193/assets/views/M4_108.png",
+        "loaded": 640
+      },
+      "video_playback": [
+        {
+          "time": 0.345567,
+          "frames": 7,
+          "readyState": 4
+        },
+        {
+          "time": 0.345912,
+          "frames": 9,
+          "readyState": 4
+        }
+      ]
+    },
+    {
+      "title": "When the map becomes a program \u2014 Astra World Models",
+      "bodyWidth": 1425,
+      "viewport": 1440,
+      "placeholders": false,
+      "images": [
+        {
+          "src": "assets/hero.jpg",
+          "complete": true,
+          "width": 1600,
+          "loading": "auto"
+        },
+        {
+          "src": "figures/methods_plan.svg",
+          "complete": true,
+          "width": 1440,
+          "loading": "lazy"
+        },
+        {
+          "src": "assets/views/M2_036.png",
+          "complete": true,
+          "width": 640,
+          "loading": "auto"
+        },
+        {
+          "src": "assets/views/GT_036.jpg",
+          "complete": true,
+          "width": 640,
+          "loading": "auto"
+        },
+        {
+          "src": "figures/five_view_comparison.jpg",
+          "complete": true,
+          "width": 1370,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/m4_pose_oracle_supplement.jpg",
+          "complete": true,
+          "width": 1600,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/direct_baseline_comparison.jpg",
+          "complete": true,
+          "width": 1280,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/model_depth_error_pixel_heatmap.png",
+          "complete": true,
+          "width": 2560,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/current_trajectories.png",
+          "complete": true,
+          "width": 2432,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/drone_three_queries.jpg",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        }
+      ],
+      "videos": [
+        {
+          "src": "http://127.0.0.1:44193/assets/drone_episode.mp4",
+          "readyState": 4
+        },
+        {
+          "src": "http://127.0.0.1:44193/assets/g1_episode.mp4",
+          "readyState": 4
+        }
+      ],
+      "language": "en",
+      "mobile": false,
+      "comparison": {
+        "source": "http://127.0.0.1:44193/assets/views/M4_108.png",
+        "loaded": 640
+      },
+      "model_loaded": true,
+      "model_switch_loaded": true,
+      "video_playback": [
+        {
+          "time": 0.345185,
+          "frames": 7,
+          "readyState": 4
+        },
+        {
+          "time": 0.275771,
+          "frames": 9,
+          "readyState": 4
+        }
+      ]
+    },
+    {
+      "title": "When the map becomes a program \u2014 Astra World Models",
+      "bodyWidth": 390,
+      "viewport": 390,
+      "placeholders": false,
+      "images": [
+        {
+          "src": "assets/hero.jpg",
+          "complete": true,
+          "width": 1600,
+          "loading": "auto"
+        },
+        {
+          "src": "figures/methods_plan.svg",
+          "complete": true,
+          "width": 1440,
+          "loading": "lazy"
+        },
+        {
+          "src": "assets/views/M2_036.png",
+          "complete": true,
+          "width": 640,
+          "loading": "auto"
+        },
+        {
+          "src": "assets/views/GT_036.jpg",
+          "complete": true,
+          "width": 640,
+          "loading": "auto"
+        },
+        {
+          "src": "figures/five_view_comparison.jpg",
+          "complete": true,
+          "width": 1370,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/m4_pose_oracle_supplement.jpg",
+          "complete": true,
+          "width": 1600,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/direct_baseline_comparison.jpg",
+          "complete": true,
+          "width": 1280,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/model_depth_error_pixel_heatmap.png",
+          "complete": true,
+          "width": 2560,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/current_trajectories.png",
+          "complete": true,
+          "width": 2432,
+          "loading": "lazy"
+        },
+        {
+          "src": "figures/drone_three_queries.jpg",
+          "complete": false,
+          "width": 0,
+          "loading": "lazy"
+        }
+      ],
+      "videos": [
+        {
+          "src": "http://127.0.0.1:44193/assets/drone_episode.mp4",
+          "readyState": 4
+        },
+        {
+          "src": "http://127.0.0.1:44193/assets/g1_episode.mp4",
+          "readyState": 4
+        }
+      ],
+      "language": "en",
+      "mobile": true,
+      "comparison": {
+        "source": "http://127.0.0.1:44193/assets/views/M4_108.png",
+        "loaded": 640
+      },
+      "video_playback": [
+        {
+          "time": 0.345643,
+          "frames": 7,
+          "readyState": 4
+        },
+        {
+          "time": 0.345818,
+          "frames": 9,
+          "readyState": 4
+        }
+      ]
+    }
+  ],
+  "javascript_exceptions": []
+}
