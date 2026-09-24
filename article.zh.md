@@ -18,6 +18,8 @@
 
 ![四条建模路径与独立验证流程](figures/methods_plan.svg)
 
+<p class="table-heading" id="table-1-title"><span class="table-number">Table 1.</span> 四种建模路线与输入信息</p>
+
 | 方法 | 允许输入 | 几何来源 | Astra / Blender 的工作 |
 |---|---|---|---|
 | M1 纯视觉 | 180 张采样 RGB | 视觉推断，无测量尺度 | 推断布局，编写对象与材质 |
@@ -47,23 +49,21 @@ MapAnything 使用四视图联合窗口、重叠两帧；先前八视图配置�
 
 ## 五个固定视角
 
-下图每行是同一个输入视角，列为 M1、M2、M3 和原始仿真 RGB；行号为 0、36、72、108、144。配准后使用相同目标相机与内参，不做逐视图调整。
+下图每行是同一个输入视角，五列依次为纯视觉 + Astra、ViPE + Astra、OpenVINS + MapAnything + Astra、GT 位姿 + MapAnything + Astra，以及原始仿真 RGB（输入 GT）；行号为 0、36、72、108、144。配准后使用相同目标相机与内参，不做逐视图调整。
 
-![五行四列统一视角比较：M1、M2、M3、输入GT](figures/five_view_comparison.jpg)
+![五行五列统一视角比较：纯视觉 + Astra、ViPE + Astra、OpenVINS + MapAnything + Astra、GT 位姿 + MapAnything + Astra、输入 GT](figures/five_view_comparison.jpg)
 
 M1 在 108 号视角的黑图被保留。它反映了统一相机与模型覆盖之间的失败，不能用另一个漂亮视角替换。这里的 GT 是原始输入 RGB，主图属于输入视角重现，而非未见图像泛化。
 
-M4 的五视角补充：
+直接几何融合保留了观测颜色，也保留了孔洞和重影。下图依次为 ViPE + TSDF、MapAnything + TSDF、OpenVINS + MapAnything + TSDF，以及输入 GT：
 
-![M4 给定 GT 相机位姿后的重建](figures/m4_pose_oracle_supplement.jpg)
-
-直接几何融合保留了观测颜色，也保留了孔洞和重影：
-
-![ViPE和MapAnything直接融合基线](figures/direct_baseline_comparison.jpg)
+![ViPE 和 MapAnything 直接融合基线：ViPE + TSDF、MapAnything + TSDF、OpenVINS + MapAnything + TSDF、输入 GT](figures/direct_baseline_comparison.jpg)
 
 ## 测量四种不同的误差
 
 我们不把轨迹、深度、几何和外观合成一个分数。相机平移使用 ATE RMSE，旋转使用角误差 RMSE；深度使用光轴 Z，AbsRel 为有效像素上的平均相对绝对误差。每个米制或近米制系统只做一次全局 SE(3) 对齐，模型继承同一变换，不再 ICP 拟合。M1 的 Sim(3) 展示单独标注。
+
+<p class="table-heading" id="table-2-title"><span class="table-number">Table 2.</span> 六个主系统的相机位姿与深度误差</p>
 
 | 方法 | ATE (m) ↓ | Rotation (°) ↓ | Native depth AbsRel ↓ | Model depth AbsRel ↓ |
 |---|---|---|---|---|
@@ -76,6 +76,8 @@ M4 的五视角补充：
 
 表中深度覆盖 180 个固定 GT 视角；M3 原生深度缺失的初始化帧通过覆盖率和缺失惩罚披露。所有 AbsRel 均需结合覆盖率阅读。GT 有效域由独立真值决定，不能按方法筛掉困难像素。
 
+<p class="table-heading" id="table-3-title"><span class="table-number">Table 3.</span> 采样相机位姿与深度的覆盖率</p>
+
 | 方法 | Sampled pose coverage | Native depth coverage | Model depth coverage |
 |---|---|---|---|
 | M1 | — | — | 99.71% |
@@ -85,9 +87,15 @@ M4 的五视角补充：
 | B1 | 100.00% | 100.00% | 94.75% |
 | B2 | 100.00% | 98.37% | 97.06% |
 
+**覆盖率如何计算？** Sampled pose coverage = 有估计位姿的采样帧数 / 180。Native depth coverage 衡量 ViPE 或 MapAnything 直接输出深度的可用比例；Model depth coverage 衡量最终重建模型在统一 GT 相机下通过射线求交获得深度的可用比例。两项深度覆盖率均为“有效 GT 区域内可用的预测深度采样点数 / 有效 GT 采样点总数”。每帧固定采样 19,200 个像素位置，180 帧共 3,456,000 个有效 GT 位置；GT 光轴深度须有限且处于 0.1–30 m，预测深度须有限且大于零，前端深度还须通过有效掩码与采样检查。缺失帧仍保留在分母中。
+
+例如，OpenVINS + MapAnything + Astra 的位姿覆盖率为 175 / 180 = 97.22%，前端深度覆盖率为 95.91%，模型深度覆盖率为 99.19%。**覆盖率说明是否有输出，不说明输出是否正确，也不是整个三维场景的表面积覆盖率。** 错位的墙面仍可产生深度，须结合深度与几何误差判断。M1 无原生位姿或深度估计，M4 位姿为 GT 输入，相关不适用项以“—”标注。
+
 完整 JSON 另外提供共同 175 帧的前端深度、RMSE、δ1，以及将缺失预测计为 30 m 误差的 MAE。共同 175 帧的原生 AbsRel 为 M2 7.36%、M3 26.12%、M4 10.47%、B2 18.36%。
 
 几何使用 100,000 个面积采样模型点到完整 GT 三角形的精确最近距离；观察区域的反向距离由固定 GT 相机射线命中点采样，按观测频次加权，并非表面积加权。它衡量可见区域的遗漏。整栋建筑还包括未观察结构，完整 GT 到模型的数值单独保存在原始报告中，不能和观察区域指标混称。
+
+<p class="table-heading" id="table-4-title"><span class="table-number">Table 4.</span> 几何误差与输入视角外观误差</p>
 
 | 方法 | Model → GT (m) ↓ | Observed GT → model (m) ↓ | PSNR (dB) ↑ | SSIM ↑ |
 |---|---|---|---|---|
@@ -117,6 +125,8 @@ M2 和 B1 共用 ViPE 轨迹，M3 和 B2p 共用 OpenVINS，M4 与 GT 重合；M
 M4 将最终模型深度 AbsRel 从 M3 的 32.00% 降至 7.54%，表明位姿质量是本例的重要瓶颈。但 M3/M4 是独立的单次 agent 建模，不能把所有差异都当作无随机性的因果效应。
 
 20 个补充视角由同一仿真轨迹的确定性小扰动产生。每视角固定 5,000 条随机射线（seed=23），直接投射到独立 GT 三角网格，与所有冻结模型使用同一组相机和射线。这是同场景新位姿深度诊断，不是新场景或独立实景测试。旧渲染 Z 深度未通过 BVH 数值核验，已排除；新视角 RGB 因渲染域差异不评分。
+
+<p class="table-heading" id="table-5-title"><span class="table-number">Table 5.</span> 同一场景新视角的深度误差</p>
 
 | System | Novel depth AbsRel ↓ | RMSE (m) ↓ | Coverage | Penalized MAE (m) ↓ |
 |---|---|---|---|---|

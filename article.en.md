@@ -18,6 +18,8 @@ Fresh Astra sessions independently constructed M2, M3, and M4 using method-speci
 
 ![Four input routes and the independent verification loop](figures/methods_plan.svg)
 
+<p class="table-heading" id="table-1-title"><span class="table-number">Table 1.</span> Four reconstruction routes and their inputs</p>
+
 | Method | Available observations | Geometric evidence | Scene construction |
 |---|---|---|---|
 | M1 / visual | 180 sampled RGB images | Visually inferred dimensions | Astra calls Blender |
@@ -45,21 +47,21 @@ M3 supplies 52 hard collision proxies. Unknown regions and vegetation exclusions
 
 ## Five fixed views
 
-Rows are keyframes 0, 36, 72, 108, and 144; columns are M1, M2, M3, and original simulator RGB. Each row uses the same target camera and intrinsics after one global registration, without per-image fitting.
+Rows are keyframes 0, 36, 72, 108, and 144; the five columns are RGB-only + Astra, ViPE + Astra, OpenVINS + MapAnything + Astra, GT pose + MapAnything + Astra, and original simulator RGB (input GT). Each row uses the same target camera and intrinsics after one global registration, without per-image fitting.
 
-![Five-by-four comparison: M1, M2, M3, and input GT](figures/five_view_comparison.jpg)
+![Five-by-five comparison: RGB-only + Astra, ViPE + Astra, OpenVINS + MapAnything + Astra, GT pose + MapAnything + Astra, and input GT](figures/five_view_comparison.jpg)
 
 M1's black frame 108 remains visible. It is a camera/model coverage failure, not an image to replace with a flattering viewpoint. These images reproduce modelling views; they do not establish held-out-image generalization.
 
-![M4 pose-oracle supplementary views](figures/m4_pose_oracle_supplement.jpg)
+Direct fusion retains observed colors as well as holes and ghost geometry. Columns show ViPE + TSDF, MapAnything + TSDF, OpenVINS + MapAnything + TSDF, and input GT:
 
-Direct fusion retains observed colors as well as holes and ghost geometry:
-
-![Direct fusion baselines at the same views](figures/direct_baseline_comparison.jpg)
+![Direct fusion at the same views: ViPE + TSDF, MapAnything + TSDF, OpenVINS + MapAnything + TSDF, and input GT](figures/direct_baseline_comparison.jpg)
 
 ## Four measurements, not one score
 
 Camera translation uses ATE RMSE; rotation uses angular RMSE. Metric and near-metric methods receive a single global SE(3) alignment, inherited by their models without ICP. M1's GT-assisted Sim(3) is explicitly separate. Depth is optical-axis Z; AbsRel averages absolute relative error over valid predictions inside an independently defined GT domain.
+
+<p class="table-heading" id="table-2-title"><span class="table-number">Table 2.</span> Camera-pose and depth errors across six main systems</p>
 
 | System | ATE (m) ↓ | Rotation (°) ↓ | Native depth AbsRel ↓ | Model depth AbsRel ↓ |
 |---|---|---|---|---|
@@ -72,6 +74,8 @@ Camera translation uses ATE RMSE; rotation uses angular RMSE. Metric and near-me
 
 Model depth is evaluated at all 180 GT cameras. Native M3 depth retains its initialization gap. AbsRel must be read together with coverage:
 
+<p class="table-heading" id="table-3-title"><span class="table-number">Table 3.</span> Coverage of sampled camera poses and depth</p>
+
 | System | Sampled pose coverage | Native depth coverage | Model depth coverage |
 |---|---|---|---|
 | M1 | — | — | 99.71% |
@@ -81,9 +85,15 @@ Model depth is evaluated at all 180 GT cameras. Native M3 depth retains its init
 | B1 | 100.00% | 100.00% | 94.75% |
 | B2 | 100.00% | 98.37% | 97.06% |
 
+**How is coverage computed?** Sampled pose coverage is the number of sampled frames with an estimated pose divided by 180. Native depth coverage measures usable depth produced directly by ViPE or MapAnything; model depth coverage measures usable depth obtained by raycasting the final reconstructed geometry at the common GT cameras. Both depth coverages divide usable predictions inside the valid GT domain by the number of valid GT samples. We sample 19,200 fixed pixel positions per frame: 3,456,000 valid GT positions across 180 frames here. GT optical-axis depth must be finite and within 0.1–30 m; predicted depth must be finite and positive, with native depth also passing its validity mask and sampling checks. Missing frames remain in the denominator.
+
+For OpenVINS + MapAnything + Astra, pose coverage is 175 / 180 = 97.22%, native depth coverage is 95.91%, and model depth coverage is 99.19%. **Coverage measures availability, not accuracy or whole-scene surface completeness.** A misplaced wall can still return depth, so depth and geometry errors must be considered alongside coverage. M1 has no native pose/depth estimate; M4 receives GT poses. Inapplicable entries are shown as “—”.
+
 The downloadable report includes RMSE, δ1, and MAE with a 30 m penalty for each missing prediction. On the common 175-frame subset, native depth AbsRel is 7.36% for M2, 26.12% for M3, 10.47% for M4, and 18.36% for B2.
 
 Geometry uses 100,000 area-sampled model points and exact nearest GT triangles. The reverse observed-GT distance samples fixed GT image-ray hits: it is observation-weighted, not surface-area-weighted. Whole-building reverse distances, including unobserved structures, are separately retained in the raw reports.
+
+<p class="table-heading" id="table-4-title"><span class="table-number">Table 4.</span> Geometry and input-view appearance errors</p>
 
 | System | Model → GT (m) ↓ | Observed GT → model (m) ↓ | PSNR (dB) ↑ | SSIM ↑ |
 |---|---|---|---|---|
@@ -113,6 +123,8 @@ Increasing OpenVINS history from 11 to 31 improved early behavior in this slow o
 Replacing estimated poses with GT poses reduces final-model depth AbsRel from 32.00% to 7.54%. Pose quality is an important bottleneck here. Because M3 and M4 are separate single agent runs, their difference is not a noise-free causal estimate.
 
 Twenty supplementary views are deterministic perturbations of the same simulated trajectory. Each uses 5,000 fixed random rays (seed 23) cast directly into the independent GT triangle mesh, with the same cameras and rays for every frozen model. This tests same-scene novel-pose depth, not a new scene or independent capture. Legacy rendered Z failed numerical BVH validation and is excluded; novel-view RGB is unscored because of renderer differences.
+
+<p class="table-heading" id="table-5-title"><span class="table-number">Table 5.</span> Depth errors at novel viewpoints in the same scene</p>
 
 | System | Novel depth AbsRel ↓ | RMSE (m) ↓ | Coverage | Penalized MAE (m) ↓ |
 |---|---|---|---|---|
