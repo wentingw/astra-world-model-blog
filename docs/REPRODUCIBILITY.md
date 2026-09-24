@@ -68,7 +68,13 @@ Pose implementation checks:
 python -m pytest -q tests/test_pose_metrics.py
 ```
 
-## Robot tasks
+## Robot tasks — current M4 revision
+
+Both tasks in the current article use M4. See [M4 downstream protocol and commands](M4_DOWNSTREAM_20260924.md) for the new 20-query drone experiment and 20-execution G1 language/planter experiment, independent target/visibility evaluation, and exact limitations. The reproduction ZIP retains both revisions.
+
+### Historical M3 experiments
+
+The following commands and results describe the earlier M3 tasks, retained unchanged for provenance; they are not the current article results.
 
 The official Unitree asset/policy checkout is pinned at `276801e46c5d433564f24658bac64f254b7d2d4b`. The DINOv2-small weights and hashes are recorded under `runtime/visual_features/dinov2-small/`. Neither task reads GT target poses or the GT map during planning/execution. Both use simulator-state-oracle self-localization.
 
