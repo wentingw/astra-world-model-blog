@@ -22,10 +22,10 @@ Fresh Astra sessions independently constructed M2, M3, and M4 using method-speci
 
 | Method | Available observations | Geometric evidence | Scene construction |
 |---|---|---|---|
-| M1 / visual | 180 sampled RGB images | Visually inferred dimensions | Astra calls Blender |
-| M2 / ViPE | Full video; sampled measurements | ViPE poses and near-metric depth | Astra calls Blender |
-| M3 / inertial | Video, IMU, calibration | OpenVINS metric poses → MapAnything depth | Astra calls Blender |
-| M4 / pose oracle | Video and GT camera poses | GT poses → MapAnything depth | Astra calls Blender |
+| M1 · RGB-only + Astra | 180 sampled RGB images | Visually inferred dimensions | Astra calls Blender |
+| M2 · ViPE + Astra | Full video; sampled measurements | ViPE poses and near-metric depth | Astra calls Blender |
+| M3 · OpenVINS + MapAnything + Astra | Video, IMU, calibration | OpenVINS metric poses → MapAnything depth | Astra calls Blender |
+| M4 · GT pose + MapAnything + Astra | Video and GT camera poses | GT poses → MapAnything depth | Astra calls Blender |
 
 **M1 asks how far visual interpretation goes.** Without measured depth or camera motion, its dimensions have no recovered metric scale. Display and shape evaluation use one disclosed GT-assisted Sim(3) registration, with scale approximately 0.690, derived from four frozen presentation-camera associations.
 
@@ -69,15 +69,17 @@ Direct fusion retains observed colors as well as holes and ghost geometry. Colum
 
 Camera translation uses ATE RMSE; rotation uses angular RMSE. Metric and near-metric methods receive a single global SE(3) alignment, inherited by their models without ICP. M1's GT-assisted Sim(3) is explicitly separate. Depth is optical-axis Z; AbsRel averages absolute relative error over valid predictions inside an independently defined GT domain.
 
+**Bold** marks the best displayed value in each metric column; ties at the shown precision are all bold. ↓ Lower is better; ↑ higher is better. GT inputs and missing values are excluded.
+
 <p class="table-heading" id="table-2-title"><span class="table-number">Table 2.</span> Camera-pose and depth errors for four reconstruction methods and three fusion baselines</p>
 
 | System | ATE (m) ↓ | Rotation (°) ↓ | Native depth AbsRel ↓ | Model depth AbsRel ↓ |
 |---|---|---|---|---|
-| M1 · RGB / Sim(3)† | — | — | — | 21.68% |
-| M2 · ViPE + Astra | 0.118 | 0.312 | 7.38% | 10.58% |
-| M3 · VIO + MapAnything + Astra | 2.595 | 1.116 | 26.12% | 32.00% |
-| M4 · GT pose + MapAnything + Astra | GT input | GT input | 10.68% | 7.54% |
-| B1 · ViPE + TSDF | 0.118 | 0.312 | 7.38% | 13.03% |
+| M1 · RGB-only + Astra / Sim(3)† | — | — | — | 21.68% |
+| M2 · ViPE + Astra | **0.118** | **0.312** | **7.38%** | 10.58% |
+| M3 · OpenVINS + MapAnything + Astra | 2.595 | 1.116 | 26.12% | 32.00% |
+| M4 · GT pose + MapAnything + Astra | GT input | GT input | 10.68% | **7.54%** |
+| B1 · ViPE + TSDF | **0.118** | **0.312** | **7.38%** | 13.03% |
 | B2 · MapAnything + TSDF | 0.791 | 0.735 | 18.41% | 16.81% |
 | B2p · OpenVINS + MapAnything + TSDF | 2.595 | 1.116 | 26.12% | 64.79% |
 
@@ -87,15 +89,15 @@ Model depth is evaluated at all 180 GT cameras. Native M3 depth retains its init
 
 <p class="table-heading" id="table-3-title"><span class="table-number">Table 3.</span> Coverage of sampled camera poses and depth</p>
 
-| System | Sampled pose coverage | Native depth coverage | Model depth coverage |
+| System | Sampled pose coverage ↑ | Native depth coverage ↑ | Model depth coverage ↑ |
 |---|---|---|---|
-| M1 | — | — | 99.71% |
-| M2 | 100.00% | 100.00% | 99.40% |
-| M3 | 97.22% | 95.91% | 99.19% |
-| M4 | — | 98.57% | 99.87% |
-| B1 | 100.00% | 100.00% | 94.75% |
-| B2 | 100.00% | 98.37% | 97.06% |
-| B2p | 97.22% | 95.91% | 93.61% |
+| M1 · RGB-only + Astra | — | — | 99.71% |
+| M2 · ViPE + Astra | **100.00%** | **100.00%** | 99.40% |
+| M3 · OpenVINS + MapAnything + Astra | 97.22% | 95.91% | 99.19% |
+| M4 · GT pose + MapAnything + Astra | — | 98.57% | **99.87%** |
+| B1 · ViPE + TSDF | **100.00%** | **100.00%** | 94.75% |
+| B2 · MapAnything + TSDF | **100.00%** | 98.37% | 97.06% |
+| B2p · OpenVINS + MapAnything + TSDF | 97.22% | 95.91% | 93.61% |
 
 **How is coverage computed?** Sampled pose coverage is the number of sampled frames with an estimated pose divided by 180. Native depth coverage measures usable depth produced directly by ViPE or MapAnything; model depth coverage measures usable depth obtained by raycasting the final reconstructed geometry at the common GT cameras. Both depth coverages divide usable predictions inside the valid GT domain by the number of valid GT samples. We sample 19,200 fixed pixel positions per frame: 3,456,000 valid GT positions across 180 frames here. GT optical-axis depth must be finite and within 0.1–30 m; predicted depth must be finite and positive, with native depth also passing its validity mask and sampling checks. Missing frames remain in the denominator.
 
@@ -109,12 +111,12 @@ Geometry uses 100,000 area-sampled model points and exact nearest GT triangles. 
 
 | System | Model → GT (m) ↓ | Observed GT → model (m) ↓ | PSNR (dB) ↑ | SSIM ↑ |
 |---|---|---|---|---|
-| M1 | 0.306 | 0.337 | 9.48 | 0.263 |
-| M2 | 0.182 | 0.195 | 12.20 | 0.342 |
-| M3 | 0.459 | 0.736 | 10.06 | 0.265 |
-| M4 | 0.069 | 0.074 | 12.59 | 0.344 |
-| B1 | 0.453 | 0.211 | 15.57 | 0.457 |
-| B2 | 0.470 | 0.395 | 13.72 | 0.370 |
+| M1 · RGB-only + Astra | 0.306 | 0.337 | 9.48 | 0.263 |
+| M2 · ViPE + Astra | 0.182 | 0.195 | 12.20 | 0.342 |
+| M3 · OpenVINS + MapAnything + Astra | 0.459 | 0.736 | 10.06 | 0.265 |
+| M4 · GT pose + MapAnything + Astra | **0.069** | **0.074** | 12.59 | 0.344 |
+| B1 · ViPE + TSDF | 0.453 | 0.211 | **15.57** | **0.457** |
+| B2 · MapAnything + TSDF | 0.470 | 0.395 | 13.72 | 0.370 |
 
 **How Table 4 is computed.** Model → GT averages the exact nearest-triangle distance from 100,000 area-weighted model-surface samples to GT. Observed GT → model averages the reverse distance from 100,000 sampled valid GT ray hits across 180 views. The former measures surface displacement; the latter measures omissions in the observed region. Both are in metres, lower is better.
 
@@ -142,15 +144,15 @@ Twenty supplementary views are deterministic perturbations of the same simulated
 
 <p class="table-heading" id="table-5-title"><span class="table-number">Table 5.</span> Depth errors at novel viewpoints in the same scene</p>
 
-| System | Novel depth AbsRel ↓ | RMSE (m) ↓ | Coverage | Penalized MAE (m) ↓ |
+| System | Novel depth AbsRel ↓ | RMSE (m) ↓ | Coverage ↑ | Penalized MAE (m) ↓ |
 |---|---|---|---|---|
-| M1 | 19.45% | 2.195 | 99.66% | 1.399 |
-| M2 | 10.39% | 1.186 | 99.42% | 0.783 |
-| M3 | 30.58% | 2.397 | 99.25% | 2.035 |
-| M4 | 7.47% | 1.146 | 99.88% | 0.465 |
-| B1 | 12.92% | 1.512 | 94.84% | 2.300 |
-| B2 | 16.23% | 1.710 | 96.96% | 1.972 |
-| B2p | 61.97% | 5.548 | 89.13% | 7.067 |
+| M1 · RGB-only + Astra | 19.45% | 2.195 | 99.66% | 1.399 |
+| M2 · ViPE + Astra | 10.39% | 1.186 | 99.42% | 0.783 |
+| M3 · OpenVINS + MapAnything + Astra | 30.58% | 2.397 | 99.25% | 2.035 |
+| M4 · GT pose + MapAnything + Astra | **7.47%** | **1.146** | **99.88%** | **0.465** |
+| B1 · ViPE + TSDF | 12.92% | 1.512 | 94.84% | 2.300 |
+| B2 · MapAnything + TSDF | 16.23% | 1.710 | 96.96% | 1.972 |
+| B2p · OpenVINS + MapAnything + TSDF | 61.97% | 5.548 | 89.13% | 7.067 |
 
 [Independent BVH report](results/evaluation/novel_depth/report.json)
 
@@ -203,14 +205,16 @@ An example instruction is **“Find the planter with low green foliage in a pale
 
 This is **language-goal selection and navigation over a generated semantic map**. Attributes come from M4, and the parser supports the stated constrained expressions. There is no online visual object recognition; evaluation outlines come from geometry-derived ray labels. Visibility includes scene occlusion but omits robot self-occlusion. The virtual camera has fixed body-relative translation [0.08, 0, 0.35] m and 20° downward pitch; it is never aimed using the target answer. Coverage is estimated with a 160×120 ray grid for a 640×480 image. The camera uses the last complete recorded state, no more than 50 ms before stopping. The video replays recorded joint states with simplified shading.
 
-<p class="table-heading" id="table-6-title"><span class="table-number">Table 6.</span> Downstream task outcomes and success criteria in M4</p>
+<p class="table-heading" id="table-6-title"><span class="table-number">Table 6.</span> M4 · GT pose + MapAnything + Astra: downstream task outcomes and success criteria</p>
 
 | Task | Episodes | Criterion | Successful |
 |---|---|---|---|
 | Drone | 20 | Collision-free arrival at retrieved viewpoint | 17 / 20 |
 | Drone | 20 | Strict photo pose: ≤0.10 m and ≤5°, collision-free | 0 / 20 |
 | Drone | 20 | Relaxed photo pose: ≤0.25 m and ≤10°, collision-free | 0 / 20 |
-| Unitree G1 | 20 | Correct target, collision-free arrival, facing and visibility | 20 / 20 |
+| Unitree G1 | 20 | Correct target, collision-free arrival, facing and visibility | **20 / 20** |
+
+Different tasks and criteria are not ranked against each other; bold here marks a perfect success count only. Episode counts and thresholds are not ranked.
 
 **Scope.** These tasks test only this reconstructed scene. Conservative bounding boxes represent obstacle collisions, and mass/friction are simulator assumptions. Neither original-GT-world dynamics transfer nor real-robot deployment is tested. Earlier M3 experiments remain in the reproduction archive; their different protocol prevents a controlled performance comparison with this revision.
 

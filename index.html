@@ -19,28 +19,28 @@
 </thead>
 <tbody>
 <tr>
-<td>M1 纯视觉</td>
+<td>M1 · 纯视觉 + Astra</td>
 <td>180 张采样 RGB</td>
 <td>视觉推断，无测量尺度</td>
 <td>推断布局，编写对象与材质</td>
 </tr>
 <tr>
-<td>M2 ViPE</td>
+<td>M2 · ViPE + Astra</td>
 <td>完整视频，再选取 180 帧几何</td>
 <td>ViPE 相机位姿与近米制深度</td>
 <td>将测量组织为对象化场景</td>
 </tr>
 <tr>
-<td>M3 惯性约束</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>视频、IMU、相机–IMU 标定</td>
 <td>OpenVINS 米制位姿 → MapAnything 深度</td>
 <td>结合图像、位姿、深度建模</td>
 </tr>
 <tr>
-<td>M4 已知位姿</td>
+<td>M4 · GT 位姿 + MapAnything + Astra</td>
 <td>视频及 GT camera pose</td>
 <td>GT 位姿 → MapAnything 深度</td>
-<td>与 M3 相同类型的建模流程</td>
+<td>与 M3 · OpenVINS + MapAnything + Astra 相同类型的建模流程</td>
 </tr>
 </tbody>
 </table></div></figure>
@@ -66,6 +66,7 @@
 <figure id="figure-6" data-figure-number="6" aria-labelledby="figure-6-title"><a href="figures/direct_baseline_comparison.jpg"><img loading="lazy" src="figures/direct_baseline_comparison.jpg" alt="ViPE 和 MapAnything 直接融合基线：ViPE + TSDF、MapAnything + TSDF、OpenVINS + MapAnything + TSDF、输入 GT"></a><figcaption id="figure-6-title"><span class="figure-number">Figure 6.</span> <span class="figure-title">直接几何融合基线与输入 GT.</span> ViPE 和 MapAnything 直接融合基线：ViPE + TSDF、MapAnything + TSDF、OpenVINS + MapAnything + TSDF、输入 GT</figcaption></figure>
 <h2 id="_5">测量四种不同的误差</h2>
 <p>我们不把轨迹、深度、几何和外观合成一个分数。相机平移使用 ATE RMSE，旋转使用角误差 RMSE；深度使用光轴 Z，AbsRel 为有效像素上的平均相对绝对误差。每个米制或近米制系统只做一次全局 SE(3) 对齐，模型继承同一变换，不再 ICP 拟合。M1 的 Sim(3) 展示单独标注。</p>
+<p><strong>粗体</strong>表示各指标列的最佳显示值；按表内精度判定，并列值均加粗。↓ 越低越好，↑ 越高越好；GT 输入与缺失值不参与排名。</p>
 <figure class="table-figure" id="table-2"><figcaption id="table-2-title"><span class="table-number">Table 2.</span> 四种建模方法与三种融合基线的相机位姿和深度误差</figcaption><div class="table-scroll"><table aria-labelledby="table-2-title">
 <thead>
 <tr>
@@ -78,7 +79,7 @@
 </thead>
 <tbody>
 <tr>
-<td>M1 · RGB / Sim(3)†</td>
+<td>M1 · 纯视觉 + Astra / Sim(3)†</td>
 <td>—</td>
 <td>—</td>
 <td>—</td>
@@ -86,30 +87,30 @@
 </tr>
 <tr>
 <td>M2 · ViPE + Astra</td>
-<td>0.118</td>
-<td>0.312</td>
-<td>7.38%</td>
+<td><strong>0.118</strong></td>
+<td><strong>0.312</strong></td>
+<td><strong>7.38%</strong></td>
 <td>10.58%</td>
 </tr>
 <tr>
-<td>M3 · VIO + MapAnything + Astra</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>2.595</td>
 <td>1.116</td>
 <td>26.12%</td>
 <td>32.00%</td>
 </tr>
 <tr>
-<td>M4 · GT pose + MapAnything + Astra</td>
+<td>M4 · GT 位姿 + MapAnything + Astra</td>
 <td>GT 输入</td>
 <td>GT 输入</td>
 <td>10.68%</td>
-<td>7.54%</td>
+<td><strong>7.54%</strong></td>
 </tr>
 <tr>
 <td>B1 · ViPE + TSDF</td>
-<td>0.118</td>
-<td>0.312</td>
-<td>7.38%</td>
+<td><strong>0.118</strong></td>
+<td><strong>0.312</strong></td>
+<td><strong>7.38%</strong></td>
 <td>13.03%</td>
 </tr>
 <tr>
@@ -134,50 +135,50 @@
 <thead>
 <tr>
 <th>方法</th>
-<th>Sampled pose coverage</th>
-<th>Native depth coverage</th>
-<th>Model depth coverage</th>
+<th>Sampled pose coverage ↑</th>
+<th>Native depth coverage ↑</th>
+<th>Model depth coverage ↑</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>M1</td>
+<td>M1 · 纯视觉 + Astra</td>
 <td>—</td>
 <td>—</td>
 <td>99.71%</td>
 </tr>
 <tr>
-<td>M2</td>
-<td>100.00%</td>
-<td>100.00%</td>
+<td>M2 · ViPE + Astra</td>
+<td><strong>100.00%</strong></td>
+<td><strong>100.00%</strong></td>
 <td>99.40%</td>
 </tr>
 <tr>
-<td>M3</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>97.22%</td>
 <td>95.91%</td>
 <td>99.19%</td>
 </tr>
 <tr>
-<td>M4</td>
+<td>M4 · GT 位姿 + MapAnything + Astra</td>
 <td>—</td>
 <td>98.57%</td>
-<td>99.87%</td>
+<td><strong>99.87%</strong></td>
 </tr>
 <tr>
-<td>B1</td>
-<td>100.00%</td>
-<td>100.00%</td>
+<td>B1 · ViPE + TSDF</td>
+<td><strong>100.00%</strong></td>
+<td><strong>100.00%</strong></td>
 <td>94.75%</td>
 </tr>
 <tr>
-<td>B2</td>
-<td>100.00%</td>
+<td>B2 · MapAnything + TSDF</td>
+<td><strong>100.00%</strong></td>
 <td>98.37%</td>
 <td>97.06%</td>
 </tr>
 <tr>
-<td>B2p</td>
+<td>B2p · OpenVINS + MapAnything + TSDF</td>
 <td>97.22%</td>
 <td>95.91%</td>
 <td>93.61%</td>
@@ -200,42 +201,42 @@
 </thead>
 <tbody>
 <tr>
-<td>M1</td>
+<td>M1 · 纯视觉 + Astra</td>
 <td>0.306</td>
 <td>0.337</td>
 <td>9.48</td>
 <td>0.263</td>
 </tr>
 <tr>
-<td>M2</td>
+<td>M2 · ViPE + Astra</td>
 <td>0.182</td>
 <td>0.195</td>
 <td>12.20</td>
 <td>0.342</td>
 </tr>
 <tr>
-<td>M3</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>0.459</td>
 <td>0.736</td>
 <td>10.06</td>
 <td>0.265</td>
 </tr>
 <tr>
-<td>M4</td>
-<td>0.069</td>
-<td>0.074</td>
+<td>M4 · GT 位姿 + MapAnything + Astra</td>
+<td><strong>0.069</strong></td>
+<td><strong>0.074</strong></td>
 <td>12.59</td>
 <td>0.344</td>
 </tr>
 <tr>
-<td>B1</td>
+<td>B1 · ViPE + TSDF</td>
 <td>0.453</td>
 <td>0.211</td>
-<td>15.57</td>
-<td>0.457</td>
+<td><strong>15.57</strong></td>
+<td><strong>0.457</strong></td>
 </tr>
 <tr>
-<td>B2</td>
+<td>B2 · MapAnything + TSDF</td>
 <td>0.470</td>
 <td>0.395</td>
 <td>13.72</td>
@@ -258,58 +259,58 @@
 <figure class="table-figure" id="table-5"><figcaption id="table-5-title"><span class="table-number">Table 5.</span> 同一场景新视角的深度误差</figcaption><div class="table-scroll"><table aria-labelledby="table-5-title">
 <thead>
 <tr>
-<th>System</th>
+<th>方法</th>
 <th>Novel depth AbsRel ↓</th>
 <th>RMSE (m) ↓</th>
-<th>Coverage</th>
+<th>Coverage ↑</th>
 <th>Penalized MAE (m) ↓</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>M1</td>
+<td>M1 · 纯视觉 + Astra</td>
 <td>19.45%</td>
 <td>2.195</td>
 <td>99.66%</td>
 <td>1.399</td>
 </tr>
 <tr>
-<td>M2</td>
+<td>M2 · ViPE + Astra</td>
 <td>10.39%</td>
 <td>1.186</td>
 <td>99.42%</td>
 <td>0.783</td>
 </tr>
 <tr>
-<td>M3</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>30.58%</td>
 <td>2.397</td>
 <td>99.25%</td>
 <td>2.035</td>
 </tr>
 <tr>
-<td>M4</td>
-<td>7.47%</td>
-<td>1.146</td>
-<td>99.88%</td>
-<td>0.465</td>
+<td>M4 · GT 位姿 + MapAnything + Astra</td>
+<td><strong>7.47%</strong></td>
+<td><strong>1.146</strong></td>
+<td><strong>99.88%</strong></td>
+<td><strong>0.465</strong></td>
 </tr>
 <tr>
-<td>B1</td>
+<td>B1 · ViPE + TSDF</td>
 <td>12.92%</td>
 <td>1.512</td>
 <td>94.84%</td>
 <td>2.300</td>
 </tr>
 <tr>
-<td>B2</td>
+<td>B2 · MapAnything + TSDF</td>
 <td>16.23%</td>
 <td>1.710</td>
 <td>96.96%</td>
 <td>1.972</td>
 </tr>
 <tr>
-<td>B2p</td>
+<td>B2p · OpenVINS + MapAnything + TSDF</td>
 <td>61.97%</td>
 <td>5.548</td>
 <td>89.13%</td>
@@ -349,7 +350,7 @@
 <p><strong>20/20 次选择正确实例并完成无碰撞导航；20/20 次通过目标可见性检查，合并成功率为 20/20。</strong> 记录轨迹的平均长度为 <strong>7.31 m</strong>，平均执行时间 <strong>22.18 s</strong>；末段接近点误差平均 <strong>0.215 m</strong>，目标朝向误差平均 <strong>3.60°</strong>。目标的采样可见面积占比为 9.72%–40.59%。下图展示五条指令各自第一个起点的结果，完整评测覆盖四个起点。</p>
 <figure id="figure-13" data-figure-number="13" aria-labelledby="figure-13-title"><a href="figures/m4_tasks/g1_comparison.jpg"><img loading="lazy" src="figures/m4_tasks/g1_comparison.jpg" alt="M4 中的语言指令、花盆目标与 G1 执行结果"></a><figcaption id="figure-13-title"><span class="figure-number">Figure 13.</span> <span class="figure-title">M4 中的花盆指令与终点可见性.</span> M4 中的语言指令、花盆目标与 G1 执行结果</figcaption></figure>
 <p>这里实现的是<strong>生成语义地图上的语言目标选择与导航</strong>：对象属性来自 M4，语言解析器支持的是上述受限表达。它没有在线视觉物体识别；评测图中的目标轮廓来自几何射线标签。可见性计入场景遮挡，未建模机器人机身的自遮挡。虚拟相机固定安装在机体坐标 [0.08, 0, 0.35] m、下俯 20°，不根据目标答案转向。可见面积用 160×120 射线网格估计对应 640×480 画面；相机取最后一条完整记录状态，距停止时刻不超过 50 ms。视频回放已记录的关节状态，采用简化着色。</p>
-<figure class="table-figure" id="table-6"><figcaption id="table-6-title"><span class="table-number">Table 6.</span> M4 场景中的下游任务结果与成功判据</figcaption><div class="table-scroll"><table aria-labelledby="table-6-title">
+<figure class="table-figure" id="table-6"><figcaption id="table-6-title"><span class="table-number">Table 6.</span> M4 · GT 位姿 + MapAnything + Astra：下游任务结果与成功判据</figcaption><div class="table-scroll"><table aria-labelledby="table-6-title">
 <thead>
 <tr>
 <th>任务</th>
@@ -381,10 +382,11 @@
 <td>宇树 G1</td>
 <td>20</td>
 <td>正确目标、无碰撞到达、朝向与可见性均通过</td>
-<td>20 / 20</td>
+<td><strong>20 / 20</strong></td>
 </tr>
 </tbody>
 </table></div></figure>
+<p>不同任务与判据不作横向排名；此表仅将达到满分的成功数加粗，试验数和阈值不参与排名。</p>
 <p><strong>适用范围。</strong> 两个任务只验证这一重建场景内的能力。障碍物碰撞体采用保守包围盒，质量和摩擦等参数是仿真假设；没有在原始 GT 世界中重跑动力学，也没有部署真实机器人。旧 M3 实验仍保留在复现包中，不与本次不同协议的结果作受控优劣比较。</p>
 <p><a href="results/evaluation/tasks/m4_downstream_20260924/report.json">合并逐次结果</a> · <a href="results/evaluation/tasks/drone_M4_20260924/report.json">无人机指标</a> · <a href="results/evaluation/tasks/g1_M4_20260924/visibility.json">G1 遮挡与可见性</a> · <a href="docs/M4_DOWNSTREAM_20260924.md">执行与复现步骤</a> · <a href="downloads/reproduction_sources.zip">代码、指令和完整轨迹</a></p>
 <h2 id="slam">对三维建模、SLAM 与具身智能意味着什么</h2>
@@ -396,4 +398,4 @@
 <h2 id="_9">证据与复现</h2>
 <p><a href="results/final_evaluation.json">最终机器可读评测</a> · <a href="results/final_evaluation.csv">CSV 指标</a> · <a href="docs/REPRODUCIBILITY.md">复现指南</a> · <a href="references/research_sources.json">研究来源</a> · <a href="docs/PROGRESS.md">完整实验日志</a></p>
 <p>资产、方法输入和冻结模型均保留哈希；所有新工作位于独立目录，旧代码和结果作为只读来源。GT 几何来自含 0.01 比例变换的米制场景 wrapper，而非未缩放源文件。读者可从输入索引追溯到每一项输出。</p>
-<p><a href="https://developers.openai.com/api/docs/models/gpt-6-astra">GPT-6 Astra</a> · <a href="https://arxiv.org/abs/2508.10934">ViPE</a> · <a href="https://github.com/facebookresearch/map-anything">MapAnything</a> · <a href="https://docs.openvins.com/">OpenVINS</a> · <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/">3D Gaussian Splatting</a> · <a href="https://github.com/facebookresearch/vggt">VGGT</a> · <a href="https://github.com/MIT-SPARK/Hydra">Hydra</a> · <a href="https://concept-fusion.github.io/">ConceptFusion</a> · <a href="https://github.com/vlmaps/vlmaps">VLMaps</a> · <a href="https://arxiv.org/abs/2403.13064">SceneScript</a> · <a href="https://arxiv.org/abs/2406.08474">Real2Code</a> · <a href="https://github.com/allenai/Holodeck">Holodeck</a> · <a href="https://frank-zy-dou.github.io/kitchen-twin/">Lab Kitchen Twin</a> · <a href="https://github.com/LiteReality/LiteReality-Agent">LiteReality-Agent</a></p><section class="downloads"><h2 id="assets">完整模型与实验资产</h2><p>下载完整冻结模型；这里的原模型保留墙体与顶棚。页面交互模型是用于检查内部结构的展示剖视副本。</p><figure class="table-figure" id="table-7"><figcaption id="table-7-title"><span class="table-number">Table 7.</span> 完整冻结模型与下载格式</figcaption><div class="table-scroll"><table aria-labelledby="table-7-title"><thead><tr><th>METHOD</th><th>EDITABLE SCENE</th><th>PORTABLE MODEL</th></tr></thead><tbody><tr><th>M1</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M2</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M3</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M4</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.glb?download=true">GLB .glb</a></td></tr></tbody></table></div></figure><p><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/tree/241d313a264a3353bcb87f9fde30f7ef8a6f5bce">Hugging Face · models, baselines, evaluations &amp; tasks</a><br><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/SHA256SUMS">SHA256SUMS</a> · <a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/payload_manifest.json">Asset manifest</a></p><p class="caption">Frozen asset revision: <code>241d313a264a3353bcb87f9fde30f7ef8a6f5bce</code></p></section></article></main></div><footer><p>WORLD LOBBY · ASTRA / BLENDER</p><p>一次可复算的工程实验。原始结果、失败与适用边界均保留。</p><a href="article.zh.md">Markdown</a> · <a href="docs/REPRODUCIBILITY.md">Reproduction</a> · <a href="results/final_evaluation.csv">CSV</a> · <a href="downloads/reproduction_sources.zip">Code &amp; episode records</a></footer><script src="site.js"></script></body></html>
+<p><a href="https://developers.openai.com/api/docs/models/gpt-6-astra">GPT-6 Astra</a> · <a href="https://arxiv.org/abs/2508.10934">ViPE</a> · <a href="https://github.com/facebookresearch/map-anything">MapAnything</a> · <a href="https://docs.openvins.com/">OpenVINS</a> · <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/">3D Gaussian Splatting</a> · <a href="https://github.com/facebookresearch/vggt">VGGT</a> · <a href="https://github.com/MIT-SPARK/Hydra">Hydra</a> · <a href="https://concept-fusion.github.io/">ConceptFusion</a> · <a href="https://github.com/vlmaps/vlmaps">VLMaps</a> · <a href="https://arxiv.org/abs/2403.13064">SceneScript</a> · <a href="https://arxiv.org/abs/2406.08474">Real2Code</a> · <a href="https://github.com/allenai/Holodeck">Holodeck</a> · <a href="https://frank-zy-dou.github.io/kitchen-twin/">Lab Kitchen Twin</a> · <a href="https://github.com/LiteReality/LiteReality-Agent">LiteReality-Agent</a></p><section class="downloads"><h2 id="assets">完整模型与实验资产</h2><p>下载完整冻结模型；这里的原模型保留墙体与顶棚。页面交互模型是用于检查内部结构的展示剖视副本。</p><figure class="table-figure" id="table-7"><figcaption id="table-7-title"><span class="table-number">Table 7.</span> 完整冻结模型与下载格式</figcaption><div class="table-scroll"><table aria-labelledby="table-7-title"><thead><tr><th>METHOD</th><th>EDITABLE SCENE</th><th>PORTABLE MODEL</th></tr></thead><tbody><tr><th>M1 · 纯视觉 + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M2 · ViPE + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M3 · OpenVINS + MapAnything + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M4 · GT 位姿 + MapAnything + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.glb?download=true">GLB .glb</a></td></tr></tbody></table></div></figure><p><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/tree/241d313a264a3353bcb87f9fde30f7ef8a6f5bce">Hugging Face · models, baselines, evaluations &amp; tasks</a><br><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/SHA256SUMS">SHA256SUMS</a> · <a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/payload_manifest.json">Asset manifest</a></p><p class="caption">Frozen asset revision: <code>241d313a264a3353bcb87f9fde30f7ef8a6f5bce</code></p></section></article></main></div><footer><p>WORLD LOBBY · ASTRA / BLENDER</p><p>一次可复算的工程实验。原始结果、失败与适用边界均保留。</p><a href="article.zh.md">Markdown</a> · <a href="docs/REPRODUCIBILITY.md">Reproduction</a> · <a href="results/final_evaluation.csv">CSV</a> · <a href="downloads/reproduction_sources.zip">Code &amp; episode records</a></footer><script src="site.js"></script></body></html>

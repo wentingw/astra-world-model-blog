@@ -19,25 +19,25 @@
 </thead>
 <tbody>
 <tr>
-<td>M1 / visual</td>
+<td>M1 · RGB-only + Astra</td>
 <td>180 sampled RGB images</td>
 <td>Visually inferred dimensions</td>
 <td>Astra calls Blender</td>
 </tr>
 <tr>
-<td>M2 / ViPE</td>
+<td>M2 · ViPE + Astra</td>
 <td>Full video; sampled measurements</td>
 <td>ViPE poses and near-metric depth</td>
 <td>Astra calls Blender</td>
 </tr>
 <tr>
-<td>M3 / inertial</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>Video, IMU, calibration</td>
 <td>OpenVINS metric poses → MapAnything depth</td>
 <td>Astra calls Blender</td>
 </tr>
 <tr>
-<td>M4 / pose oracle</td>
+<td>M4 · GT pose + MapAnything + Astra</td>
 <td>Video and GT camera poses</td>
 <td>GT poses → MapAnything depth</td>
 <td>Astra calls Blender</td>
@@ -65,6 +65,7 @@
 <figure id="figure-6" data-figure-number="6" aria-labelledby="figure-6-title"><a href="figures/direct_baseline_comparison.jpg"><img loading="lazy" src="figures/direct_baseline_comparison.jpg" alt="Direct fusion at the same views: ViPE + TSDF, MapAnything + TSDF, OpenVINS + MapAnything + TSDF, and input GT"></a><figcaption id="figure-6-title"><span class="figure-number">Figure 6.</span> <span class="figure-title">Direct geometry-fusion baselines and input GT.</span> Direct fusion at the same views: ViPE + TSDF, MapAnything + TSDF, OpenVINS + MapAnything + TSDF, and input GT</figcaption></figure>
 <h2 id="four-measurements-not-one-score">Four measurements, not one score</h2>
 <p>Camera translation uses ATE RMSE; rotation uses angular RMSE. Metric and near-metric methods receive a single global SE(3) alignment, inherited by their models without ICP. M1's GT-assisted Sim(3) is explicitly separate. Depth is optical-axis Z; AbsRel averages absolute relative error over valid predictions inside an independently defined GT domain.</p>
+<p><strong>Bold</strong> marks the best displayed value in each metric column; ties at the shown precision are all bold. ↓ Lower is better; ↑ higher is better. GT inputs and missing values are excluded.</p>
 <figure class="table-figure" id="table-2"><figcaption id="table-2-title"><span class="table-number">Table 2.</span> Camera-pose and depth errors for four reconstruction methods and three fusion baselines</figcaption><div class="table-scroll"><table aria-labelledby="table-2-title">
 <thead>
 <tr>
@@ -77,7 +78,7 @@
 </thead>
 <tbody>
 <tr>
-<td>M1 · RGB / Sim(3)†</td>
+<td>M1 · RGB-only + Astra / Sim(3)†</td>
 <td>—</td>
 <td>—</td>
 <td>—</td>
@@ -85,13 +86,13 @@
 </tr>
 <tr>
 <td>M2 · ViPE + Astra</td>
-<td>0.118</td>
-<td>0.312</td>
-<td>7.38%</td>
+<td><strong>0.118</strong></td>
+<td><strong>0.312</strong></td>
+<td><strong>7.38%</strong></td>
 <td>10.58%</td>
 </tr>
 <tr>
-<td>M3 · VIO + MapAnything + Astra</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>2.595</td>
 <td>1.116</td>
 <td>26.12%</td>
@@ -102,13 +103,13 @@
 <td>GT input</td>
 <td>GT input</td>
 <td>10.68%</td>
-<td>7.54%</td>
+<td><strong>7.54%</strong></td>
 </tr>
 <tr>
 <td>B1 · ViPE + TSDF</td>
-<td>0.118</td>
-<td>0.312</td>
-<td>7.38%</td>
+<td><strong>0.118</strong></td>
+<td><strong>0.312</strong></td>
+<td><strong>7.38%</strong></td>
 <td>13.03%</td>
 </tr>
 <tr>
@@ -133,50 +134,50 @@
 <thead>
 <tr>
 <th>System</th>
-<th>Sampled pose coverage</th>
-<th>Native depth coverage</th>
-<th>Model depth coverage</th>
+<th>Sampled pose coverage ↑</th>
+<th>Native depth coverage ↑</th>
+<th>Model depth coverage ↑</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>M1</td>
+<td>M1 · RGB-only + Astra</td>
 <td>—</td>
 <td>—</td>
 <td>99.71%</td>
 </tr>
 <tr>
-<td>M2</td>
-<td>100.00%</td>
-<td>100.00%</td>
+<td>M2 · ViPE + Astra</td>
+<td><strong>100.00%</strong></td>
+<td><strong>100.00%</strong></td>
 <td>99.40%</td>
 </tr>
 <tr>
-<td>M3</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>97.22%</td>
 <td>95.91%</td>
 <td>99.19%</td>
 </tr>
 <tr>
-<td>M4</td>
+<td>M4 · GT pose + MapAnything + Astra</td>
 <td>—</td>
 <td>98.57%</td>
-<td>99.87%</td>
+<td><strong>99.87%</strong></td>
 </tr>
 <tr>
-<td>B1</td>
-<td>100.00%</td>
-<td>100.00%</td>
+<td>B1 · ViPE + TSDF</td>
+<td><strong>100.00%</strong></td>
+<td><strong>100.00%</strong></td>
 <td>94.75%</td>
 </tr>
 <tr>
-<td>B2</td>
-<td>100.00%</td>
+<td>B2 · MapAnything + TSDF</td>
+<td><strong>100.00%</strong></td>
 <td>98.37%</td>
 <td>97.06%</td>
 </tr>
 <tr>
-<td>B2p</td>
+<td>B2p · OpenVINS + MapAnything + TSDF</td>
 <td>97.22%</td>
 <td>95.91%</td>
 <td>93.61%</td>
@@ -199,42 +200,42 @@
 </thead>
 <tbody>
 <tr>
-<td>M1</td>
+<td>M1 · RGB-only + Astra</td>
 <td>0.306</td>
 <td>0.337</td>
 <td>9.48</td>
 <td>0.263</td>
 </tr>
 <tr>
-<td>M2</td>
+<td>M2 · ViPE + Astra</td>
 <td>0.182</td>
 <td>0.195</td>
 <td>12.20</td>
 <td>0.342</td>
 </tr>
 <tr>
-<td>M3</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>0.459</td>
 <td>0.736</td>
 <td>10.06</td>
 <td>0.265</td>
 </tr>
 <tr>
-<td>M4</td>
-<td>0.069</td>
-<td>0.074</td>
+<td>M4 · GT pose + MapAnything + Astra</td>
+<td><strong>0.069</strong></td>
+<td><strong>0.074</strong></td>
 <td>12.59</td>
 <td>0.344</td>
 </tr>
 <tr>
-<td>B1</td>
+<td>B1 · ViPE + TSDF</td>
 <td>0.453</td>
 <td>0.211</td>
-<td>15.57</td>
-<td>0.457</td>
+<td><strong>15.57</strong></td>
+<td><strong>0.457</strong></td>
 </tr>
 <tr>
-<td>B2</td>
+<td>B2 · MapAnything + TSDF</td>
 <td>0.470</td>
 <td>0.395</td>
 <td>13.72</td>
@@ -260,55 +261,55 @@
 <th>System</th>
 <th>Novel depth AbsRel ↓</th>
 <th>RMSE (m) ↓</th>
-<th>Coverage</th>
+<th>Coverage ↑</th>
 <th>Penalized MAE (m) ↓</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>M1</td>
+<td>M1 · RGB-only + Astra</td>
 <td>19.45%</td>
 <td>2.195</td>
 <td>99.66%</td>
 <td>1.399</td>
 </tr>
 <tr>
-<td>M2</td>
+<td>M2 · ViPE + Astra</td>
 <td>10.39%</td>
 <td>1.186</td>
 <td>99.42%</td>
 <td>0.783</td>
 </tr>
 <tr>
-<td>M3</td>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>30.58%</td>
 <td>2.397</td>
 <td>99.25%</td>
 <td>2.035</td>
 </tr>
 <tr>
-<td>M4</td>
-<td>7.47%</td>
-<td>1.146</td>
-<td>99.88%</td>
-<td>0.465</td>
+<td>M4 · GT pose + MapAnything + Astra</td>
+<td><strong>7.47%</strong></td>
+<td><strong>1.146</strong></td>
+<td><strong>99.88%</strong></td>
+<td><strong>0.465</strong></td>
 </tr>
 <tr>
-<td>B1</td>
+<td>B1 · ViPE + TSDF</td>
 <td>12.92%</td>
 <td>1.512</td>
 <td>94.84%</td>
 <td>2.300</td>
 </tr>
 <tr>
-<td>B2</td>
+<td>B2 · MapAnything + TSDF</td>
 <td>16.23%</td>
 <td>1.710</td>
 <td>96.96%</td>
 <td>1.972</td>
 </tr>
 <tr>
-<td>B2p</td>
+<td>B2p · OpenVINS + MapAnything + TSDF</td>
 <td>61.97%</td>
 <td>5.548</td>
 <td>89.13%</td>
@@ -348,7 +349,7 @@
 <p><strong>20/20 executions select the correct instance and complete collision-free navigation; 20/20 pass target visibility, for 20/20 combined successes.</strong> Mean recorded path length is <strong>7.31 m</strong>, with <strong>22.18 s</strong> mean execution time. At the last recorded state, mean approach error is <strong>0.215 m</strong> and target-bearing error <strong>3.60°</strong>. Sampled target coverage ranges from 9.72% to 40.59%. The panel shows each instruction from its first start; the full evaluation includes all four starts.</p>
 <figure id="figure-13" data-figure-number="13" aria-labelledby="figure-13-title"><a href="figures/m4_tasks/g1_comparison.jpg"><img loading="lazy" src="figures/m4_tasks/g1_comparison.jpg" alt="Language instructions, planter targets and G1 execution results in M4"></a><figcaption id="figure-13-title"><span class="figure-number">Figure 13.</span> <span class="figure-title">Planter instructions and endpoint visibility in M4.</span> Language instructions, planter targets and G1 execution results in M4</figcaption></figure>
 <p>This is <strong>language-goal selection and navigation over a generated semantic map</strong>. Attributes come from M4, and the parser supports the stated constrained expressions. There is no online visual object recognition; evaluation outlines come from geometry-derived ray labels. Visibility includes scene occlusion but omits robot self-occlusion. The virtual camera has fixed body-relative translation [0.08, 0, 0.35] m and 20° downward pitch; it is never aimed using the target answer. Coverage is estimated with a 160×120 ray grid for a 640×480 image. The camera uses the last complete recorded state, no more than 50 ms before stopping. The video replays recorded joint states with simplified shading.</p>
-<figure class="table-figure" id="table-6"><figcaption id="table-6-title"><span class="table-number">Table 6.</span> Downstream task outcomes and success criteria in M4</figcaption><div class="table-scroll"><table aria-labelledby="table-6-title">
+<figure class="table-figure" id="table-6"><figcaption id="table-6-title"><span class="table-number">Table 6.</span> M4 · GT pose + MapAnything + Astra: downstream task outcomes and success criteria</figcaption><div class="table-scroll"><table aria-labelledby="table-6-title">
 <thead>
 <tr>
 <th>Task</th>
@@ -380,10 +381,11 @@
 <td>Unitree G1</td>
 <td>20</td>
 <td>Correct target, collision-free arrival, facing and visibility</td>
-<td>20 / 20</td>
+<td><strong>20 / 20</strong></td>
 </tr>
 </tbody>
 </table></div></figure>
+<p>Different tasks and criteria are not ranked against each other; bold here marks a perfect success count only. Episode counts and thresholds are not ranked.</p>
 <p><strong>Scope.</strong> These tasks test only this reconstructed scene. Conservative bounding boxes represent obstacle collisions, and mass/friction are simulator assumptions. Neither original-GT-world dynamics transfer nor real-robot deployment is tested. Earlier M3 experiments remain in the reproduction archive; their different protocol prevents a controlled performance comparison with this revision.</p>
 <p><a href="results/evaluation/tasks/m4_downstream_20260924/report.json">Combined episode results</a> · <a href="results/evaluation/tasks/drone_M4_20260924/report.json">Drone metrics</a> · <a href="results/evaluation/tasks/g1_M4_20260924/visibility.json">G1 occlusion and visibility</a> · <a href="docs/M4_DOWNSTREAM_20260924.md">Execution and reproduction</a> · <a href="downloads/reproduction_sources.zip">Code, instructions and complete trajectories</a></p>
 <h2 id="what-could-change">What could change</h2>
@@ -395,4 +397,4 @@
 <h2 id="evidence-and-reproduction">Evidence and reproduction</h2>
 <p><a href="results/final_evaluation.json">Machine-readable results</a> · <a href="results/final_evaluation.csv">CSV</a> · <a href="docs/REPRODUCIBILITY.md">Reproduction guide</a> · <a href="references/research_sources.json">Source records</a> · <a href="docs/PROGRESS.md">Progress log</a></p>
 <p>Inputs and frozen artifacts retain hashes. New work lives in an isolated directory; previous code and results remain read-only sources. GT geometry comes from the metric scene wrapper with its 0.01 scale transform, not the unscaled source asset.</p>
-<p><a href="https://developers.openai.com/api/docs/models/gpt-6-astra">GPT-6 Astra</a> · <a href="https://arxiv.org/abs/2508.10934">ViPE</a> · <a href="https://github.com/facebookresearch/map-anything">MapAnything</a> · <a href="https://docs.openvins.com/">OpenVINS</a> · <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/">3D Gaussian Splatting</a> · <a href="https://github.com/facebookresearch/vggt">VGGT</a> · <a href="https://github.com/MIT-SPARK/Hydra">Hydra</a> · <a href="https://concept-fusion.github.io/">ConceptFusion</a> · <a href="https://github.com/vlmaps/vlmaps">VLMaps</a> · <a href="https://arxiv.org/abs/2403.13064">SceneScript</a> · <a href="https://arxiv.org/abs/2406.08474">Real2Code</a> · <a href="https://github.com/allenai/Holodeck">Holodeck</a> · <a href="https://frank-zy-dou.github.io/kitchen-twin/">Lab Kitchen Twin</a> · <a href="https://github.com/LiteReality/LiteReality-Agent">LiteReality-Agent</a></p><section class="downloads"><h2 id="assets">Full models and experiment assets</h2><p>Download the complete frozen models, including walls and ceilings. The interactive models above are display cutaways for inspection.</p><figure class="table-figure" id="table-7"><figcaption id="table-7-title"><span class="table-number">Table 7.</span> Complete frozen models and download formats</figcaption><div class="table-scroll"><table aria-labelledby="table-7-title"><thead><tr><th>METHOD</th><th>EDITABLE SCENE</th><th>PORTABLE MODEL</th></tr></thead><tbody><tr><th>M1</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M2</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M3</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M4</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.glb?download=true">GLB .glb</a></td></tr></tbody></table></div></figure><p><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/tree/241d313a264a3353bcb87f9fde30f7ef8a6f5bce">Hugging Face · models, baselines, evaluations &amp; tasks</a><br><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/SHA256SUMS">SHA256SUMS</a> · <a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/payload_manifest.json">Asset manifest</a></p><p class="caption">Frozen asset revision: <code>241d313a264a3353bcb87f9fde30f7ef8a6f5bce</code></p></section></article></main></div><footer><p>WORLD LOBBY · ASTRA / BLENDER</p><p>A reproducible engineering experiment, with failures and limits retained.</p><a href="article.en.md">Markdown</a> · <a href="docs/REPRODUCIBILITY.md">Reproduction</a> · <a href="results/final_evaluation.csv">CSV</a> · <a href="downloads/reproduction_sources.zip">Code &amp; episode records</a></footer><script src="site.js"></script></body></html>
+<p><a href="https://developers.openai.com/api/docs/models/gpt-6-astra">GPT-6 Astra</a> · <a href="https://arxiv.org/abs/2508.10934">ViPE</a> · <a href="https://github.com/facebookresearch/map-anything">MapAnything</a> · <a href="https://docs.openvins.com/">OpenVINS</a> · <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/">3D Gaussian Splatting</a> · <a href="https://github.com/facebookresearch/vggt">VGGT</a> · <a href="https://github.com/MIT-SPARK/Hydra">Hydra</a> · <a href="https://concept-fusion.github.io/">ConceptFusion</a> · <a href="https://github.com/vlmaps/vlmaps">VLMaps</a> · <a href="https://arxiv.org/abs/2403.13064">SceneScript</a> · <a href="https://arxiv.org/abs/2406.08474">Real2Code</a> · <a href="https://github.com/allenai/Holodeck">Holodeck</a> · <a href="https://frank-zy-dou.github.io/kitchen-twin/">Lab Kitchen Twin</a> · <a href="https://github.com/LiteReality/LiteReality-Agent">LiteReality-Agent</a></p><section class="downloads"><h2 id="assets">Full models and experiment assets</h2><p>Download the complete frozen models, including walls and ceilings. The interactive models above are display cutaways for inspection.</p><figure class="table-figure" id="table-7"><figcaption id="table-7-title"><span class="table-number">Table 7.</span> Complete frozen models and download formats</figcaption><div class="table-scroll"><table aria-labelledby="table-7-title"><thead><tr><th>METHOD</th><th>EDITABLE SCENE</th><th>PORTABLE MODEL</th></tr></thead><tbody><tr><th>M1 · RGB-only + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M2 · ViPE + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M3 · OpenVINS + MapAnything + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M4 · GT pose + MapAnything + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.glb?download=true">GLB .glb</a></td></tr></tbody></table></div></figure><p><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/tree/241d313a264a3353bcb87f9fde30f7ef8a6f5bce">Hugging Face · models, baselines, evaluations &amp; tasks</a><br><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/SHA256SUMS">SHA256SUMS</a> · <a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/payload_manifest.json">Asset manifest</a></p><p class="caption">Frozen asset revision: <code>241d313a264a3353bcb87f9fde30f7ef8a6f5bce</code></p></section></article></main></div><footer><p>WORLD LOBBY · ASTRA / BLENDER</p><p>A reproducible engineering experiment, with failures and limits retained.</p><a href="article.en.md">Markdown</a> · <a href="docs/REPRODUCIBILITY.md">Reproduction</a> · <a href="results/final_evaluation.csv">CSV</a> · <a href="downloads/reproduction_sources.zip">Code &amp; episode records</a></footer><script src="site.js"></script></body></html>
