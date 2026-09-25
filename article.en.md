@@ -107,22 +107,36 @@ The downloadable report includes RMSE, δ1, and MAE with a 30 m penalty for each
 
 Geometry uses 100,000 area-sampled model points and exact nearest GT triangles. The reverse observed-GT distance samples fixed GT image-ray hits: it is observation-weighted, not surface-area-weighted. Whole-building reverse distances, including unobserved structures, are separately retained in the raw reports.
 
-<p class="table-heading" id="table-4-title"><span class="table-number">Table 4.</span> Geometry and input-view appearance errors</p>
+<p class="table-heading" id="table-4-title"><span class="table-number">Table 4.</span> Geometry errors for four reconstruction methods and three fusion baselines</p>
 
-| System | Model → GT (m) ↓ | Observed GT → model (m) ↓ | PSNR (dB) ↑ | SSIM ↑ |
-|---|---|---|---|---|
-| M1 · RGB-only + Astra | 0.306 | 0.337 | 9.48 | 0.263 |
-| M2 · ViPE + Astra | 0.182 | 0.195 | 12.20 | 0.342 |
-| M3 · OpenVINS + MapAnything + Astra | 0.459 | 0.736 | 10.06 | 0.265 |
-| M4 · GT pose + MapAnything + Astra | **0.069** | **0.074** | 12.59 | 0.344 |
-| B1 · ViPE + TSDF | 0.453 | 0.211 | **15.57** | **0.457** |
-| B2 · MapAnything + TSDF | 0.470 | 0.395 | 13.72 | 0.370 |
+| System | Model → GT (m) ↓ | Observed GT → model (m) ↓ |
+|---|---|---|
+| M1 · RGB-only + Astra | 0.306 | 0.337 |
+| M2 · ViPE + Astra | 0.182 | 0.195 |
+| M3 · OpenVINS + MapAnything + Astra | 0.459 | 0.736 |
+| M4 · GT pose + MapAnything + Astra | **0.069** | **0.074** |
+| B1 · ViPE + TSDF | 0.453 | 0.211 |
+| B2 · MapAnything + TSDF | 0.470 | 0.395 |
+| B2p · OpenVINS + MapAnything + TSDF | 1.032 | 0.676 |
 
 **How Table 4 is computed.** Model → GT averages the exact nearest-triangle distance from 100,000 area-weighted model-surface samples to GT. Observed GT → model averages the reverse distance from 100,000 sampled valid GT ray hits across 180 views. The former measures surface displacement; the latter measures omissions in the observed region. Both are in metres, lower is better.
 
-PSNR/SSIM use **five input views: 0, 36, 72, 108, and 144**. Predictions are 640×480; GT is downsampled from 1280×960 with Lanczos. Rendering uses fixed GT views after the single global registration, with no per-image pose, color, or exposure fitting. For RGB normalized to [0,1], per-view `MSE = mean((predicted RGB − GT RGB)²)` and `PSNR = −10 log10(MSE)`. SSIM uses scikit-image's 7×7 uniform window, `K1=0.01`, `K2=0.03`, and `data_range=1`, averaged across RGB channels. Each reported score is the arithmetic mean of five per-view scores. PSNR includes every pixel; SSIM uses the library's default border handling, with no additional validity mask. Black frames and holes remain included.
+<p class="table-heading" id="table-5-title"><span class="table-number">Table 5.</span> Appearance metrics for four reconstruction methods at five input views</p>
 
-**Why does B1 lead PSNR/SSIM?** B1 fuses observed RGB into TSDF mesh vertex colors, rendered with an unlit emission material and the Standard color transform. Astra models instead generate materials and use scene lighting. Because these evaluation views belong to the input observations, B1 benefits from directly reusing observed colors. Its 15.57 dB / 0.457 describes better appearance reproduction at these seen views; color reuse and rendering differences have not been separated by ablation. Its Model → GT distance is 0.453 m, versus M4's 0.069 m. **Appearance similarity is not geometric accuracy. This table does not measure held-out RGB generalization or isolate material, lighting, and renderer effects.**
+| System | PSNR (dB) ↑ | SSIM ↑ | LPIPS ↓ |
+|---|---|---|---|
+| M1 · RGB-only + Astra | 9.48 | 0.263 | 0.707 |
+| M2 · ViPE + Astra | 12.20 | 0.342 | 0.566 |
+| M3 · OpenVINS + MapAnything + Astra | 10.06 | 0.265 | 0.714 |
+| M4 · GT pose + MapAnything + Astra | **12.59** | **0.344** | **0.530** |
+
+**How Table 5 is computed.** PSNR, SSIM and LPIPS use the same **five input views: 0, 36, 72, 108, and 144**. Predictions are 640×480; GT is downsampled from 1280×960 with Lanczos. Rendering uses fixed GT views after the single global registration, with no per-image pose, color, or exposure fitting. For RGB normalized to [0,1], per-view `MSE = mean((predicted RGB − GT RGB)²)` and `PSNR = −10 log10(MSE)`. SSIM uses scikit-image's 7×7 uniform window, `K1=0.01`, `K2=0.03`, and `data_range=1`, averaged across RGB channels. PSNR and SSIM retain the frozen results, each an arithmetic mean of five per-view scores. PSNR includes every pixel; SSIM uses the library's default border handling, with no additional validity mask. Black frames and holes remain included.
+
+LPIPS uses the official `lpips==0.1.4` implementation with **AlexNet, learned v0.1 calibration weights**, and an ImageNet-pretrained backbone on the same 640×480 RGB pairs. Inputs are converted from [0,1] to [−1,1]; the network runs in evaluation mode, with five per-view scores averaged arithmetically. **Lower is better.** There is no cropping, extra resizing or masking; the black M1 frame is included. LPIPS measures appearance differences in learned features, not geometric or physical accuracy.
+
+[Table 5 per-view results and weight hashes](results/evaluation/appearance_five_views_20260925/report.json) · [Mean scores CSV](results/evaluation/appearance_five_views_20260925/means.csv)
+
+Table 5 focuses on generated-scene appearance for M1–M4. Previously measured fusion-baseline PSNR/SSIM remain in the [complete RGB results](results/rgb_metrics_five_views_mean.json). For example, B1 directly reuses observed colors through unlit emission and Standard color management; its 15.57 dB / 0.457 does not establish better geometry. **These scores do not measure held-out RGB generalization or isolate material, lighting, and renderer effects.**
 
 The paired M3/B2p comparison also resists a single winner. Astra reduces model-to-GT distance from 1.032 m to 0.459 m and rendered-depth AbsRel from 64.79% to 32.00%. But observed-GT-to-model distance increases from 0.676 m to 0.736 m. Object construction can suppress noisy surfaces while omitting observed ones.
 
@@ -142,7 +156,7 @@ Replacing estimated poses with GT poses reduces final-model depth AbsRel from 32
 
 Twenty supplementary views are deterministic perturbations of the same simulated trajectory. Each uses 5,000 fixed random rays (seed 23) cast directly into the independent GT triangle mesh, with the same cameras and rays for every frozen model. This tests same-scene novel-pose depth, not a new scene or independent capture. Legacy rendered Z failed numerical BVH validation and is excluded; novel-view RGB is unscored because of renderer differences.
 
-<p class="table-heading" id="table-5-title"><span class="table-number">Table 5.</span> Depth errors at novel viewpoints in the same scene</p>
+<p class="table-heading" id="table-6-title"><span class="table-number">Table 6.</span> Depth errors at novel viewpoints in the same scene</p>
 
 | System | Novel depth AbsRel ↓ | RMSE (m) ↓ | Coverage ↑ | Penalized MAE (m) ↓ |
 |---|---|---|---|---|
@@ -205,7 +219,7 @@ An example instruction is **“Find the planter with low green foliage in a pale
 
 This is **language-goal selection and navigation over a generated semantic map**. Attributes come from M4, and the parser supports the stated constrained expressions. There is no online visual object recognition; evaluation outlines come from geometry-derived ray labels. Visibility includes scene occlusion but omits robot self-occlusion. The virtual camera has fixed body-relative translation [0.08, 0, 0.35] m and 20° downward pitch; it is never aimed using the target answer. Coverage is estimated with a 160×120 ray grid for a 640×480 image. The camera uses the last complete recorded state, no more than 50 ms before stopping. The video replays recorded joint states with simplified shading.
 
-<p class="table-heading" id="table-6-title"><span class="table-number">Table 6.</span> M4 · GT pose + MapAnything + Astra: downstream task outcomes and success criteria</p>
+<p class="table-heading" id="table-7-title"><span class="table-number">Table 7.</span> M4 · GT pose + MapAnything + Astra: downstream task outcomes and success criteria</p>
 
 | Task | Episodes | Criterion | Successful |
 |---|---|---|---|

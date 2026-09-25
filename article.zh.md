@@ -109,22 +109,36 @@ M1 在 108 号视角的黑图被保留。它反映了统一相机与模型覆盖
 
 几何使用 100,000 个面积采样模型点到完整 GT 三角形的精确最近距离；观察区域的反向距离由固定 GT 相机射线命中点采样，按观测频次加权，并非表面积加权。它衡量可见区域的遗漏。整栋建筑还包括未观察结构，完整 GT 到模型的数值单独保存在原始报告中，不能和观察区域指标混称。
 
-<p class="table-heading" id="table-4-title"><span class="table-number">Table 4.</span> 几何误差与输入视角外观误差</p>
+<p class="table-heading" id="table-4-title"><span class="table-number">Table 4.</span> 四种建模方法与三种融合基线的几何误差</p>
 
-| 方法 | Model → GT (m) ↓ | Observed GT → model (m) ↓ | PSNR (dB) ↑ | SSIM ↑ |
-|---|---|---|---|---|
-| M1 · 纯视觉 + Astra | 0.306 | 0.337 | 9.48 | 0.263 |
-| M2 · ViPE + Astra | 0.182 | 0.195 | 12.20 | 0.342 |
-| M3 · OpenVINS + MapAnything + Astra | 0.459 | 0.736 | 10.06 | 0.265 |
-| M4 · GT 位姿 + MapAnything + Astra | **0.069** | **0.074** | 12.59 | 0.344 |
-| B1 · ViPE + TSDF | 0.453 | 0.211 | **15.57** | **0.457** |
-| B2 · MapAnything + TSDF | 0.470 | 0.395 | 13.72 | 0.370 |
+| 方法 | Model → GT (m) ↓ | Observed GT → model (m) ↓ |
+|---|---|---|
+| M1 · 纯视觉 + Astra | 0.306 | 0.337 |
+| M2 · ViPE + Astra | 0.182 | 0.195 |
+| M3 · OpenVINS + MapAnything + Astra | 0.459 | 0.736 |
+| M4 · GT 位姿 + MapAnything + Astra | **0.069** | **0.074** |
+| B1 · ViPE + TSDF | 0.453 | 0.211 |
+| B2 · MapAnything + TSDF | 0.470 | 0.395 |
+| B2p · OpenVINS + MapAnything + TSDF | 1.032 | 0.676 |
 
 **Table 4 如何计算？** Model → GT 对模型表面按三角形面积采样 100,000 点，取到 GT 三角面片的最近距离均值；Observed GT → model 从 180 帧有效 GT 射线命中点中采样 100,000 点，取到模型表面的最近距离均值。前者反映重建表面的偏离，后者反映已观察区域的遗漏；两列均以米计，越低越好。
 
-PSNR/SSIM 只使用 **5 个输入视角：0、36、72、108、144**。预测图为 640×480，GT 从 1280×960 用 Lanczos 缩小；相机采用统一 GT 视角及一次全局配准，不做逐图位姿、颜色或曝光拟合。RGB 归一化到 [0,1]，每图 `MSE = mean((预测 RGB − GT RGB)²)`，`PSNR = −10 log10(MSE)`；SSIM 使用 scikit-image 的 7×7 均匀窗口，`K1=0.01`、`K2=0.03`、`data_range=1`，对 RGB 通道平均。表中分别报告五张图 PSNR 和 SSIM 的算术平均。PSNR 使用全图像素；SSIM 按库默认边界处理，无额外有效区域遮罩，黑图与空洞均保留。
+<p class="table-heading" id="table-5-title"><span class="table-number">Table 5.</span> 四种建模方法在五个输入视角上的外观指标</p>
 
-**为什么 B1 的 PSNR/SSIM 最好？** B1 将输入 RGB 融合成 TSDF 网格的顶点颜色，再通过不受灯光影响的 emission 材质与 Standard 色彩变换渲染；Astra 模型则需要生成材质并使用场景灯光。评测视角来自同一批输入观测，因此 B1 具有直接复用观测颜色的优势。15.57 dB / 0.457 表明它在本次已见视角上更接近原图；这同时包含颜色复用和渲染设置差异，尚无消融量化各自贡献。B1 的 Model → GT 为 0.453 m，仍大于 M4 的 0.069 m。**外观相似度不等同于几何精度；本表没有评估未见视角 RGB 泛化，也没有隔离材质、照明或渲染器影响。**
+| 方法 | PSNR (dB) ↑ | SSIM ↑ | LPIPS ↓ |
+|---|---|---|---|
+| M1 · 纯视觉 + Astra | 9.48 | 0.263 | 0.707 |
+| M2 · ViPE + Astra | 12.20 | 0.342 | 0.566 |
+| M3 · OpenVINS + MapAnything + Astra | 10.06 | 0.265 | 0.714 |
+| M4 · GT 位姿 + MapAnything + Astra | **12.59** | **0.344** | **0.530** |
+
+**Table 5 如何计算？** PSNR、SSIM 和 LPIPS 使用同一组 **5 个输入视角：0、36、72、108、144**。预测图为 640×480，GT 从 1280×960 用 Lanczos 缩小；相机采用统一 GT 视角及一次全局配准，不做逐图位姿、颜色或曝光拟合。RGB 归一化到 [0,1]，每图 `MSE = mean((预测 RGB − GT RGB)²)`，`PSNR = −10 log10(MSE)`；SSIM 使用 scikit-image 的 7×7 均匀窗口，`K1=0.01`、`K2=0.03`、`data_range=1`，对 RGB 通道平均。PSNR 与 SSIM 沿用冻结结果，分别报告五张图得分的算术平均。PSNR 使用全图像素；SSIM 按库默认边界处理，无额外有效区域遮罩，黑图与空洞均保留。
+
+LPIPS 使用官方 `lpips==0.1.4` 的 **AlexNet、v0.1 学习权重**及 ImageNet 预训练骨干，在上述同一组 640×480 RGB 上计算；输入由 [0,1] 转为 [−1,1]，使用评估模式，逐图计算后取五视角算术平均，**越低越好**。不裁剪、不额外缩放或掩蔽，M1 的黑图也计入。它衡量学习特征中的外观差异，不等同于几何或物理准确性。
+
+[Table 5 逐视角结果与权重哈希](results/evaluation/appearance_five_views_20260925/report.json) · [均值 CSV](results/evaluation/appearance_five_views_20260925/means.csv)
+
+Table 5 专门比较 M1–M4 的生成场景外观。融合基线的既有 PSNR/SSIM 仍保存在[完整 RGB 结果](results/rgb_metrics_five_views_mean.json)中；例如 B1 通过不受灯光影响的 emission 材质与 Standard 色彩变换直接复用观测颜色，其 15.57 dB / 0.457 不代表几何更准确。**这里没有评估未见视角 RGB 泛化，也没有隔离材质、照明或渲染器影响。**
 
 同输入消融也没有简单的赢家：M3 相比 B2p，模型→GT 距离从 1.032 m 降至 0.459 m，模型深度 AbsRel 从 64.79% 降至 32.00%；但观察 GT→模型距离由 0.676 m 上升至 0.736 m。程序化整理可以压制部分噪声，同时遗漏可见表面。
 
@@ -144,7 +158,7 @@ M4 将最终模型深度 AbsRel 从 M3 的 32.00% 降至 7.54%，表明位姿质
 
 20 个补充视角由同一仿真轨迹的确定性小扰动产生。每视角固定 5,000 条随机射线（seed=23），直接投射到独立 GT 三角网格，与所有冻结模型使用同一组相机和射线。这是同场景新位姿深度诊断，不是新场景或独立实景测试。旧渲染 Z 深度未通过 BVH 数值核验，已排除；新视角 RGB 因渲染域差异不评分。
 
-<p class="table-heading" id="table-5-title"><span class="table-number">Table 5.</span> 同一场景新视角的深度误差</p>
+<p class="table-heading" id="table-6-title"><span class="table-number">Table 6.</span> 同一场景新视角的深度误差</p>
 
 | 方法 | Novel depth AbsRel ↓ | RMSE (m) ↓ | Coverage ↑ | Penalized MAE (m) ↓ |
 |---|---|---|---|---|
@@ -207,7 +221,7 @@ M4 建图时获得 GT 相机位姿，但没有获得 GT 网格或深度。运行
 
 这里实现的是**生成语义地图上的语言目标选择与导航**：对象属性来自 M4，语言解析器支持的是上述受限表达。它没有在线视觉物体识别；评测图中的目标轮廓来自几何射线标签。可见性计入场景遮挡，未建模机器人机身的自遮挡。虚拟相机固定安装在机体坐标 [0.08, 0, 0.35] m、下俯 20°，不根据目标答案转向。可见面积用 160×120 射线网格估计对应 640×480 画面；相机取最后一条完整记录状态，距停止时刻不超过 50 ms。视频回放已记录的关节状态，采用简化着色。
 
-<p class="table-heading" id="table-6-title"><span class="table-number">Table 6.</span> M4 · GT 位姿 + MapAnything + Astra：下游任务结果与成功判据</p>
+<p class="table-heading" id="table-7-title"><span class="table-number">Table 7.</span> M4 · GT 位姿 + MapAnything + Astra：下游任务结果与成功判据</p>
 
 | 任务 | 试验数 | 判定条件 | 成功数 |
 |---|---|---|---|

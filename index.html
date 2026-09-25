@@ -189,14 +189,12 @@
 <p>例如，OpenVINS + MapAnything + Astra 的位姿覆盖率为 175 / 180 = 97.22%，前端深度覆盖率为 95.91%，模型深度覆盖率为 99.19%。<strong>覆盖率说明是否有输出，不说明输出是否正确，也不是整个三维场景的表面积覆盖率。</strong> 错位的墙面仍可产生深度，须结合深度与几何误差判断。M1 无原生位姿或深度估计，M4 位姿为 GT 输入，相关不适用项以“—”标注。</p>
 <p>完整 JSON 另外提供共同 175 帧的前端深度、RMSE、δ1，以及将缺失预测计为 30 m 误差的 MAE。共同 175 帧的原生 AbsRel 为 M2 7.36%、M3 26.12%、M4 10.47%、B2 18.36%。</p>
 <p>几何使用 100,000 个面积采样模型点到完整 GT 三角形的精确最近距离；观察区域的反向距离由固定 GT 相机射线命中点采样，按观测频次加权，并非表面积加权。它衡量可见区域的遗漏。整栋建筑还包括未观察结构，完整 GT 到模型的数值单独保存在原始报告中，不能和观察区域指标混称。</p>
-<figure class="table-figure" id="table-4"><figcaption id="table-4-title"><span class="table-number">Table 4.</span> 几何误差与输入视角外观误差</figcaption><div class="table-scroll"><table aria-labelledby="table-4-title">
+<figure class="table-figure" id="table-4"><figcaption id="table-4-title"><span class="table-number">Table 4.</span> 四种建模方法与三种融合基线的几何误差</figcaption><div class="table-scroll"><table aria-labelledby="table-4-title">
 <thead>
 <tr>
 <th>方法</th>
 <th>Model → GT (m) ↓</th>
 <th>Observed GT → model (m) ↓</th>
-<th>PSNR (dB) ↑</th>
-<th>SSIM ↑</th>
 </tr>
 </thead>
 <tbody>
@@ -204,49 +202,80 @@
 <td>M1 · 纯视觉 + Astra</td>
 <td>0.306</td>
 <td>0.337</td>
-<td>9.48</td>
-<td>0.263</td>
 </tr>
 <tr>
 <td>M2 · ViPE + Astra</td>
 <td>0.182</td>
 <td>0.195</td>
-<td>12.20</td>
-<td>0.342</td>
 </tr>
 <tr>
 <td>M3 · OpenVINS + MapAnything + Astra</td>
 <td>0.459</td>
 <td>0.736</td>
-<td>10.06</td>
-<td>0.265</td>
 </tr>
 <tr>
 <td>M4 · GT 位姿 + MapAnything + Astra</td>
 <td><strong>0.069</strong></td>
 <td><strong>0.074</strong></td>
-<td>12.59</td>
-<td>0.344</td>
 </tr>
 <tr>
 <td>B1 · ViPE + TSDF</td>
 <td>0.453</td>
 <td>0.211</td>
-<td><strong>15.57</strong></td>
-<td><strong>0.457</strong></td>
 </tr>
 <tr>
 <td>B2 · MapAnything + TSDF</td>
 <td>0.470</td>
 <td>0.395</td>
-<td>13.72</td>
-<td>0.370</td>
+</tr>
+<tr>
+<td>B2p · OpenVINS + MapAnything + TSDF</td>
+<td>1.032</td>
+<td>0.676</td>
 </tr>
 </tbody>
 </table></div></figure>
 <p><strong>Table 4 如何计算？</strong> Model → GT 对模型表面按三角形面积采样 100,000 点，取到 GT 三角面片的最近距离均值；Observed GT → model 从 180 帧有效 GT 射线命中点中采样 100,000 点，取到模型表面的最近距离均值。前者反映重建表面的偏离，后者反映已观察区域的遗漏；两列均以米计，越低越好。</p>
-<p>PSNR/SSIM 只使用 <strong>5 个输入视角：0、36、72、108、144</strong>。预测图为 640×480，GT 从 1280×960 用 Lanczos 缩小；相机采用统一 GT 视角及一次全局配准，不做逐图位姿、颜色或曝光拟合。RGB 归一化到 [0,1]，每图 <code>MSE = mean((预测 RGB − GT RGB)²)</code>，<code>PSNR = −10 log10(MSE)</code>；SSIM 使用 scikit-image 的 7×7 均匀窗口，<code>K1=0.01</code>、<code>K2=0.03</code>、<code>data_range=1</code>，对 RGB 通道平均。表中分别报告五张图 PSNR 和 SSIM 的算术平均。PSNR 使用全图像素；SSIM 按库默认边界处理，无额外有效区域遮罩，黑图与空洞均保留。</p>
-<p><strong>为什么 B1 的 PSNR/SSIM 最好？</strong> B1 将输入 RGB 融合成 TSDF 网格的顶点颜色，再通过不受灯光影响的 emission 材质与 Standard 色彩变换渲染；Astra 模型则需要生成材质并使用场景灯光。评测视角来自同一批输入观测，因此 B1 具有直接复用观测颜色的优势。15.57 dB / 0.457 表明它在本次已见视角上更接近原图；这同时包含颜色复用和渲染设置差异，尚无消融量化各自贡献。B1 的 Model → GT 为 0.453 m，仍大于 M4 的 0.069 m。<strong>外观相似度不等同于几何精度；本表没有评估未见视角 RGB 泛化，也没有隔离材质、照明或渲染器影响。</strong></p>
+<figure class="table-figure" id="table-5"><figcaption id="table-5-title"><span class="table-number">Table 5.</span> 四种建模方法在五个输入视角上的外观指标</figcaption><div class="table-scroll"><table aria-labelledby="table-5-title">
+<thead>
+<tr>
+<th>方法</th>
+<th>PSNR (dB) ↑</th>
+<th>SSIM ↑</th>
+<th>LPIPS ↓</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1 · 纯视觉 + Astra</td>
+<td>9.48</td>
+<td>0.263</td>
+<td>0.707</td>
+</tr>
+<tr>
+<td>M2 · ViPE + Astra</td>
+<td>12.20</td>
+<td>0.342</td>
+<td>0.566</td>
+</tr>
+<tr>
+<td>M3 · OpenVINS + MapAnything + Astra</td>
+<td>10.06</td>
+<td>0.265</td>
+<td>0.714</td>
+</tr>
+<tr>
+<td>M4 · GT 位姿 + MapAnything + Astra</td>
+<td><strong>12.59</strong></td>
+<td><strong>0.344</strong></td>
+<td><strong>0.530</strong></td>
+</tr>
+</tbody>
+</table></div></figure>
+<p><strong>Table 5 如何计算？</strong> PSNR、SSIM 和 LPIPS 使用同一组 <strong>5 个输入视角：0、36、72、108、144</strong>。预测图为 640×480，GT 从 1280×960 用 Lanczos 缩小；相机采用统一 GT 视角及一次全局配准，不做逐图位姿、颜色或曝光拟合。RGB 归一化到 [0,1]，每图 <code>MSE = mean((预测 RGB − GT RGB)²)</code>，<code>PSNR = −10 log10(MSE)</code>；SSIM 使用 scikit-image 的 7×7 均匀窗口，<code>K1=0.01</code>、<code>K2=0.03</code>、<code>data_range=1</code>，对 RGB 通道平均。PSNR 与 SSIM 沿用冻结结果，分别报告五张图得分的算术平均。PSNR 使用全图像素；SSIM 按库默认边界处理，无额外有效区域遮罩，黑图与空洞均保留。</p>
+<p>LPIPS 使用官方 <code>lpips==0.1.4</code> 的 <strong>AlexNet、v0.1 学习权重</strong>及 ImageNet 预训练骨干，在上述同一组 640×480 RGB 上计算；输入由 [0,1] 转为 [−1,1]，使用评估模式，逐图计算后取五视角算术平均，<strong>越低越好</strong>。不裁剪、不额外缩放或掩蔽，M1 的黑图也计入。它衡量学习特征中的外观差异，不等同于几何或物理准确性。</p>
+<p><a href="results/evaluation/appearance_five_views_20260925/report.json">Table 5 逐视角结果与权重哈希</a> · <a href="results/evaluation/appearance_five_views_20260925/means.csv">均值 CSV</a></p>
+<p>Table 5 专门比较 M1–M4 的生成场景外观。融合基线的既有 PSNR/SSIM 仍保存在<a href="results/rgb_metrics_five_views_mean.json">完整 RGB 结果</a>中；例如 B1 通过不受灯光影响的 emission 材质与 Standard 色彩变换直接复用观测颜色，其 15.57 dB / 0.457 不代表几何更准确。<strong>这里没有评估未见视角 RGB 泛化，也没有隔离材质、照明或渲染器影响。</strong></p>
 <p>同输入消融也没有简单的赢家：M3 相比 B2p，模型→GT 距离从 1.032 m 降至 0.459 m，模型深度 AbsRel 从 64.79% 降至 32.00%；但观察 GT→模型距离由 0.676 m 上升至 0.736 m。程序化整理可以压制部分噪声，同时遗漏可见表面。</p>
 <figure id="figure-7" data-figure-number="7" aria-labelledby="figure-7-title"><a href="figures/model_depth_error_pixel_heatmap.png"><img loading="lazy" src="figures/model_depth_error_pixel_heatmap.png" alt="相同GT相机下的模型深度相对误差；统一色标"></a><figcaption id="figure-7-title"><span class="figure-number">Figure 7.</span> <span class="figure-title">固定 GT 相机下的模型深度误差.</span> 相同GT相机下的模型深度相对误差；统一色标</figcaption></figure>
 <p>颜色在相对误差 1.0 处截断，青色表示缺失或无效预测。它让局部错误与缺失直接可见。</p>
@@ -256,7 +285,7 @@
 <p>这段慢速运动中，将 OpenVINS 历史窗口从 11 扩大到 31 改善了早期行为，却没有解决中段漂移。首帧对齐诊断下，60 秒位置误差约 1.02 cm，180 秒约 6.79 m；主表采用全程最佳刚体对齐，ATE 为 2.595 m。两种定义回答不同问题。</p>
 <p>M4 将最终模型深度 AbsRel 从 M3 的 32.00% 降至 7.54%，表明位姿质量是本例的重要瓶颈。但 M3/M4 是独立的单次 agent 建模，不能把所有差异都当作无随机性的因果效应。</p>
 <p>20 个补充视角由同一仿真轨迹的确定性小扰动产生。每视角固定 5,000 条随机射线（seed=23），直接投射到独立 GT 三角网格，与所有冻结模型使用同一组相机和射线。这是同场景新位姿深度诊断，不是新场景或独立实景测试。旧渲染 Z 深度未通过 BVH 数值核验，已排除；新视角 RGB 因渲染域差异不评分。</p>
-<figure class="table-figure" id="table-5"><figcaption id="table-5-title"><span class="table-number">Table 5.</span> 同一场景新视角的深度误差</figcaption><div class="table-scroll"><table aria-labelledby="table-5-title">
+<figure class="table-figure" id="table-6"><figcaption id="table-6-title"><span class="table-number">Table 6.</span> 同一场景新视角的深度误差</figcaption><div class="table-scroll"><table aria-labelledby="table-6-title">
 <thead>
 <tr>
 <th>方法</th>
@@ -350,7 +379,7 @@
 <p><strong>20/20 次选择正确实例并完成无碰撞导航；20/20 次通过目标可见性检查，合并成功率为 20/20。</strong> 记录轨迹的平均长度为 <strong>7.31 m</strong>，平均执行时间 <strong>22.18 s</strong>；末段接近点误差平均 <strong>0.215 m</strong>，目标朝向误差平均 <strong>3.60°</strong>。目标的采样可见面积占比为 9.72%–40.59%。下图展示五条指令各自第一个起点的结果，完整评测覆盖四个起点。</p>
 <figure id="figure-13" data-figure-number="13" aria-labelledby="figure-13-title"><a href="figures/m4_tasks/g1_comparison.jpg"><img loading="lazy" src="figures/m4_tasks/g1_comparison.jpg" alt="M4 中的语言指令、花盆目标与 G1 执行结果"></a><figcaption id="figure-13-title"><span class="figure-number">Figure 13.</span> <span class="figure-title">M4 中的花盆指令与终点可见性.</span> M4 中的语言指令、花盆目标与 G1 执行结果</figcaption></figure>
 <p>这里实现的是<strong>生成语义地图上的语言目标选择与导航</strong>：对象属性来自 M4，语言解析器支持的是上述受限表达。它没有在线视觉物体识别；评测图中的目标轮廓来自几何射线标签。可见性计入场景遮挡，未建模机器人机身的自遮挡。虚拟相机固定安装在机体坐标 [0.08, 0, 0.35] m、下俯 20°，不根据目标答案转向。可见面积用 160×120 射线网格估计对应 640×480 画面；相机取最后一条完整记录状态，距停止时刻不超过 50 ms。视频回放已记录的关节状态，采用简化着色。</p>
-<figure class="table-figure" id="table-6"><figcaption id="table-6-title"><span class="table-number">Table 6.</span> M4 · GT 位姿 + MapAnything + Astra：下游任务结果与成功判据</figcaption><div class="table-scroll"><table aria-labelledby="table-6-title">
+<figure class="table-figure" id="table-7"><figcaption id="table-7-title"><span class="table-number">Table 7.</span> M4 · GT 位姿 + MapAnything + Astra：下游任务结果与成功判据</figcaption><div class="table-scroll"><table aria-labelledby="table-7-title">
 <thead>
 <tr>
 <th>任务</th>
@@ -398,4 +427,4 @@
 <h2 id="_9">证据与复现</h2>
 <p><a href="results/final_evaluation.json">最终机器可读评测</a> · <a href="results/final_evaluation.csv">CSV 指标</a> · <a href="docs/REPRODUCIBILITY.md">复现指南</a> · <a href="references/research_sources.json">研究来源</a> · <a href="docs/PROGRESS.md">完整实验日志</a></p>
 <p>资产、方法输入和冻结模型均保留哈希；所有新工作位于独立目录，旧代码和结果作为只读来源。GT 几何来自含 0.01 比例变换的米制场景 wrapper，而非未缩放源文件。读者可从输入索引追溯到每一项输出。</p>
-<p><a href="https://developers.openai.com/api/docs/models/gpt-6-astra">GPT-6 Astra</a> · <a href="https://arxiv.org/abs/2508.10934">ViPE</a> · <a href="https://github.com/facebookresearch/map-anything">MapAnything</a> · <a href="https://docs.openvins.com/">OpenVINS</a> · <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/">3D Gaussian Splatting</a> · <a href="https://github.com/facebookresearch/vggt">VGGT</a> · <a href="https://github.com/MIT-SPARK/Hydra">Hydra</a> · <a href="https://concept-fusion.github.io/">ConceptFusion</a> · <a href="https://github.com/vlmaps/vlmaps">VLMaps</a> · <a href="https://arxiv.org/abs/2403.13064">SceneScript</a> · <a href="https://arxiv.org/abs/2406.08474">Real2Code</a> · <a href="https://github.com/allenai/Holodeck">Holodeck</a> · <a href="https://frank-zy-dou.github.io/kitchen-twin/">Lab Kitchen Twin</a> · <a href="https://github.com/LiteReality/LiteReality-Agent">LiteReality-Agent</a></p><section class="downloads"><h2 id="assets">完整模型与实验资产</h2><p>下载完整冻结模型；这里的原模型保留墙体与顶棚。页面交互模型是用于检查内部结构的展示剖视副本。</p><figure class="table-figure" id="table-7"><figcaption id="table-7-title"><span class="table-number">Table 7.</span> 完整冻结模型与下载格式</figcaption><div class="table-scroll"><table aria-labelledby="table-7-title"><thead><tr><th>METHOD</th><th>EDITABLE SCENE</th><th>PORTABLE MODEL</th></tr></thead><tbody><tr><th>M1 · 纯视觉 + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M2 · ViPE + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M3 · OpenVINS + MapAnything + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M4 · GT 位姿 + MapAnything + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.glb?download=true">GLB .glb</a></td></tr></tbody></table></div></figure><p><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/tree/241d313a264a3353bcb87f9fde30f7ef8a6f5bce">Hugging Face · models, baselines, evaluations &amp; tasks</a><br><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/SHA256SUMS">SHA256SUMS</a> · <a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/payload_manifest.json">Asset manifest</a></p><p class="caption">Frozen asset revision: <code>241d313a264a3353bcb87f9fde30f7ef8a6f5bce</code></p></section></article></main></div><footer><p>WORLD LOBBY · ASTRA / BLENDER</p><p>一次可复算的工程实验。原始结果、失败与适用边界均保留。</p><a href="article.zh.md">Markdown</a> · <a href="docs/REPRODUCIBILITY.md">Reproduction</a> · <a href="results/final_evaluation.csv">CSV</a> · <a href="downloads/reproduction_sources.zip">Code &amp; episode records</a></footer><script src="site.js"></script></body></html>
+<p><a href="https://developers.openai.com/api/docs/models/gpt-6-astra">GPT-6 Astra</a> · <a href="https://arxiv.org/abs/2508.10934">ViPE</a> · <a href="https://github.com/facebookresearch/map-anything">MapAnything</a> · <a href="https://docs.openvins.com/">OpenVINS</a> · <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/">3D Gaussian Splatting</a> · <a href="https://github.com/facebookresearch/vggt">VGGT</a> · <a href="https://github.com/MIT-SPARK/Hydra">Hydra</a> · <a href="https://concept-fusion.github.io/">ConceptFusion</a> · <a href="https://github.com/vlmaps/vlmaps">VLMaps</a> · <a href="https://arxiv.org/abs/2403.13064">SceneScript</a> · <a href="https://arxiv.org/abs/2406.08474">Real2Code</a> · <a href="https://github.com/allenai/Holodeck">Holodeck</a> · <a href="https://frank-zy-dou.github.io/kitchen-twin/">Lab Kitchen Twin</a> · <a href="https://github.com/LiteReality/LiteReality-Agent">LiteReality-Agent</a></p><section class="downloads"><h2 id="assets">完整模型与实验资产</h2><p>下载完整冻结模型；这里的原模型保留墙体与顶棚。页面交互模型是用于检查内部结构的展示剖视副本。</p><figure class="table-figure" id="table-8"><figcaption id="table-8-title"><span class="table-number">Table 8.</span> 完整冻结模型与下载格式</figcaption><div class="table-scroll"><table aria-labelledby="table-8-title"><thead><tr><th>METHOD</th><th>EDITABLE SCENE</th><th>PORTABLE MODEL</th></tr></thead><tbody><tr><th>M1 · 纯视觉 + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M1/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M2 · ViPE + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M2/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M3 · OpenVINS + MapAnything + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M3/scene.glb?download=true">GLB .glb</a></td></tr><tr><th>M4 · GT 位姿 + MapAnything + Astra</th><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.blend?download=true">Blender .blend</a></td><td><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/models/M4/scene.glb?download=true">GLB .glb</a></td></tr></tbody></table></div></figure><p><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/tree/241d313a264a3353bcb87f9fde30f7ef8a6f5bce">Hugging Face · models, baselines, evaluations &amp; tasks</a><br><a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/SHA256SUMS">SHA256SUMS</a> · <a href="https://huggingface.co/datasets/Ooliva/astra-world-model-blog/resolve/241d313a264a3353bcb87f9fde30f7ef8a6f5bce/payload_manifest.json">Asset manifest</a></p><p class="caption">Frozen asset revision: <code>241d313a264a3353bcb87f9fde30f7ef8a6f5bce</code></p></section></article></main></div><footer><p>WORLD LOBBY · ASTRA / BLENDER</p><p>一次可复算的工程实验。原始结果、失败与适用边界均保留。</p><a href="article.zh.md">Markdown</a> · <a href="docs/REPRODUCIBILITY.md">Reproduction</a> · <a href="results/final_evaluation.csv">CSV</a> · <a href="downloads/reproduction_sources.zip">Code &amp; episode records</a></footer><script src="site.js"></script></body></html>

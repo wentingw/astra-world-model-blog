@@ -16,9 +16,15 @@ Novel-pose depth is independently implemented in `scripts/evaluate_novel_depth_b
 
 Task definitions are in `docs/INDEPENDENT_FINAL_REVIEW.md`. Candidate arrival differs from accurate drone rephotography. G1 reports a constrained model-world semantic approach goal, not independently verified target visibility or identity. GT static clearance does not test inside/outside or dynamics transfer; G1 foot points are fixed base-pose proxies.
 
-## Table 4 aggregation and interpretation
+## Table 4: geometry; Table 5: appearance
 
-Model-to-GT uses 100,000 area-weighted model samples and exact nearest-triangle distance. The observed reverse metric uses 100,000 samples from valid GT ray hits across 180 cameras. RGB scores use only five input views [0,36,72,108,144], without a method-specific validity mask. Per-view PSNR is -10 log10(MSE) on RGB normalized to [0,1]; reported PSNR is the arithmetic mean of five per-view PSNRs, not PSNR of pooled MSE. SSIM uses the scikit-image uniform 7x7 window, sample covariance, K1=0.01, K2=0.03, data_range=1, default border handling, then RGB-channel and view means.
+Table 4 contains M1–M4, B1, B2 and B2p, with Model → GT and Observed GT → model only. Model-to-GT uses 100,000 area-weighted model samples and exact nearest-triangle distance. The observed reverse metric uses 100,000 samples from valid GT ray hits across 180 cameras. B2p uses the already frozen supplementary geometry results: 1.0322355083 m and 0.6757842306 m.
+
+Table 5 contains M1–M4 only, with PSNR, SSIM and LPIPS. All three use the same five input views [0,36,72,108,144] at 640×480, without a method-specific validity mask. Per-view PSNR is -10 log10(MSE) on RGB normalized to [0,1]; reported PSNR is the arithmetic mean of five per-view PSNRs, not PSNR of pooled MSE. SSIM uses the scikit-image uniform 7x7 window, sample covariance, K1=0.01, K2=0.03, data_range=1, default border handling, then RGB-channel and view means. PSNR and SSIM are unchanged and have been recomputed against the frozen values.
+
+LPIPS uses `lpips==0.1.4`, AlexNet, learned v0.1 calibration weights and an ImageNet-pretrained backbone, in evaluation mode on CPU float32. `normalize=True` converts [0,1] tensors to [-1,1]; spatial=False gives one score per pair, and the table averages five scores. No extra crop, resize, mask or color fitting is used. GT alone is Lanczos-downsampled from 1280×960 as for PSNR/SSIM. The black M1 frame remains included. Lower LPIPS is better; it is not restricted to [0,1]. Input hashes, weight hashes, per-view scores and dependency versions are in `results/evaluation/appearance_five_views_20260925/report.json`. An identical-image check returns zero. Baseline RGB scores remain available in the original full RGB report, outside the new Table 5.
+
+The previous novel-depth, task and asset tables are now Tables 6, 7 and 8.
 
 B1 fuses input RGB into vertex colors rendered as unlit emission with Standard color management. Astra uses generated materials and scene lights. B1 therefore reuses observed appearance at these same input views. Its better PSNR/SSIM does not establish better geometry or held-out-view generalization, and this experiment does not separately quantify color reuse and rendering-domain effects.
 
